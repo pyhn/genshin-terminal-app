@@ -5,6 +5,7 @@ class main_menu:
         self.choice = None
         self.decision = False
         self.logged_in = False
+        self.shutdown = False
         self.user = None
 
     def display_menu(self):
@@ -14,6 +15,8 @@ class main_menu:
             print(f"3. Exit")
             self.choice = input("Enter Choice: ")
             self.handle_menu_input()
+            if self.shutdown:
+                break
 
     def handle_menu_input(self):
         options = ["1","2","3"]
@@ -35,13 +38,15 @@ class main_menu:
                     self.user = sign_up.get_user()
 
             if self.choice == "3":
-                print(f"System Shutting Down...")
-                exit()
+                self.shutdown = True
             self.decision = True
 
     def get_logged_in(self):
         return self.logged_in
     
+    def get_shutdown(self):
+        return self.shutdown
+
     def get_user(self):
         return self.user
 
