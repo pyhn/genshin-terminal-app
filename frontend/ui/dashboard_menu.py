@@ -1,3 +1,5 @@
+from .user_profile import user_profile
+
 class dashboard_menu:
     def __init__(self) -> None:
         self.user = None
@@ -25,7 +27,9 @@ class dashboard_menu:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
             if self.choice == "1":
-                print("Visiting Profile.")
+                profile = user_profile()
+                profile.set_user(self.user)
+                profile.display()
             if self.choice == "2":
                 print("Visiting Friends.")
             if self.choice == "3":

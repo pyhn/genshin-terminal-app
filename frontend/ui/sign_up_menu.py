@@ -5,33 +5,11 @@ class sign_up_menu:
         self.logged_in = False
 
     def display_sign_up(self):
-        user_confirmed = False
-        while not user_confirmed:
-            confirm_options = ["y","n"]
-            temp_user = input("Enter Desired Username: ")
-            user_confirm_input = input("Accept Username? (y/n): ").lower().strip()
-            if user_confirm_input in confirm_options:
-                if user_confirm_input == confirm_options[0]:
-                    self.handle_user_inputs(temp_user, True)
-                    user_confirmed = True
-                else:
-                     user_confirmed = False
-            else:
-                print("Please choose a valid option. ")
+        username = self.acquire_user_info("username")
+        password = self.acquire_user_info("password")
+        email = self.acquire_user_info("email")
 
-        pass_confirmed = False
-        while not pass_confirmed:
-            temp_pass = input("Enter Desired Password: ")
-            pass_confirm_input = input("Accept Password? (y/n): ").lower().strip()
-            if pass_confirm_input in confirm_options:
-                if pass_confirm_input == confirm_options[0]:
-                    self.handle_user_inputs(temp_pass, False)
-                    pass_confirmed = True
-                else:
-                    pass_confirmed = False
-            else:
-                print("Please choose a valid option. ")
-        
+        confirm_options = ["y", "n"]
         confirm_login = input("Log In? (y/n): ").lower().strip()
         if confirm_login in confirm_options:
             if confirm_login == confirm_options[0]:
@@ -47,6 +25,23 @@ class sign_up_menu:
     def get_user(self):
         return self.user
     
+    def acquire_user_info(self, info_type):
+        confirm_options = ["y", "n"]
+        confirmed = False
+        
+        while not confirmed:
+            user_input = input(f"Enter Desired {info_type.capitalize()}: ")
+            confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
+            
+            if confirm_input in confirm_options:
+                if confirm_input == confirm_options[0]:
+                    confirmed = True
+                    return user_input
+                else:
+                    confirmed = False
+            else:
+                print("Please choose a valid option.")
+
     def handle_user_inputs(self, temp, is_user):
         if is_user:
             self.user = temp
