@@ -43,3 +43,9 @@ class db_manager:
         );
         '''
         self.execute_update(create_table_query)
+
+    def create_new_user(self):
+        self.cursor.execute(""" 
+        SELECT MAX(u.usr)
+        FROM users u
+        """,)

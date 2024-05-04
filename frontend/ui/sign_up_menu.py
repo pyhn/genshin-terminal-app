@@ -1,3 +1,5 @@
+from data.user import user
+
 class sign_up_menu:
     def __init__(self) -> None:
         self.user = None
@@ -9,6 +11,11 @@ class sign_up_menu:
         password = self.acquire_user_info("password")
         email = self.acquire_user_info("email")
 
+        new_user = user()
+        user.set_username(username)
+        user.set_password(password)
+        user.set_email(email)
+
         confirm_options = ["y", "n"]
         confirm_login = input("Log In? (y/n): ").lower().strip()
         if confirm_login in confirm_options:
@@ -16,9 +23,9 @@ class sign_up_menu:
                 self.logged_in = True
                 print(f"Log In Successful\n")
             else:
-                print(f"Thank you for signing up {self.user}! Returning to Main Menu...")
+                print(f"Thank you for signing up {new_user.get_username}! Returning to Main Menu...")
         else:
-           print(f"Thank you for signing up {self.user}! Returning to Main Menu...")
+           print(f"Thank you for signing up {new_user.get_username}! Returning to Main Menu...")
         
     def get_logged_in(self):
         return self.logged_in
@@ -41,12 +48,5 @@ class sign_up_menu:
                     confirmed = False
             else:
                 print("Please choose a valid option.")
-
-    def handle_user_inputs(self, temp, is_user):
-        if is_user:
-            self.user = temp
-        else:
-            self.password = temp
-    
            
            

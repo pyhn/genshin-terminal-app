@@ -1,3 +1,4 @@
+import getpass
 class login_menu:
     def __init__(self) -> None:
         self.user = None
@@ -14,7 +15,7 @@ class login_menu:
     def display_menu(self):
         while self.attempts < 4 and self.logged_in == False:
             self.user = input("Enter Username: ")
-            self.password = input("Enter Password: ")
+            self.password = getpass.getpass("Enter Password: ")
             self.handle_user_inputs()
                 
         if self.attempts > 3:

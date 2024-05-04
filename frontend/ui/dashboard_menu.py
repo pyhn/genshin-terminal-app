@@ -1,5 +1,4 @@
 from .user_profile import user_profile
-
 class dashboard_menu:
     def __init__(self) -> None:
         self.user = None
