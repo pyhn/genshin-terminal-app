@@ -49,3 +49,5 @@ class db_manager:
         SELECT MAX(u.usr)
         FROM users u
         """,)
+
+        
