@@ -25,30 +25,29 @@ class LogInMenu:
 
     def handle_user_inputs(self, user_id, password):
         result = self.user_controller.get_user_pass_by_id(user_id)
-        if result == None:
-            print(f"Invalid User ID or Password.")
-            self.attempts += 1
         
-        db_password = result[1]
-
-        if password != db_password:
+        if result is None:
+            print("Invalid User ID or Password.")
             self.attempts += 1
-        
-        self.user = self.initialize_user(user_id)
-        print("Log In Successful\n")
-        self.logged_in = True
+        elif password != result[1]:
+            print("Invalid Password.")
+            self.attempts += 1
+        else:
+            self.user = self.initialize_user(user_id)
+            print("Log In Successful")
+            self.logged_in = True
 
     def initialize_user(self, user_id):
 
         result = self.user_controller.get_user_info_by_id(user_id)
         user = User()
-        user.set_username(result[0])
-        user.set_password(result[1])
-        user.set_email(result[2])
-        user.set_status(result[3])
-        user.set_bio(result[4])
-        user.set_fav_character(result[5])
-        user.set_fav_region(result[6])
+        user.set_username(result[1])
+        user.set_password(result[2])
+        user.set_email(result[3])
+        user.set_status(result[4])
+        user.set_bio(result[5])
+        user.set_fav_character(result[6])
+        user.set_fav_region(result[7])
         return user
 
 

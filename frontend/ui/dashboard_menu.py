@@ -10,7 +10,7 @@ class DashboardMenu:
         self.logged_in = logged_in
 
     def display(self):
-        print(f"Welcome {self.user.username} to your Dashboard")
+        print(f"Welcome {self.user.get_username()} to your Dashboard")
         print("+-------------------------------------+")
         print("| 1. Profile | 2. Friends | 3. Search |")
         print("+-------------------------------------+")
