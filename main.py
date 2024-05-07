@@ -9,18 +9,17 @@ def main():
     db.connect()
     db.create_user_table()
     
-    decor = banners()
+    decor = banners
     decor.display_welcome()
     
     user_controller = UserController(db)
-    menu = MainMenu()
+    menu = MainMenu(user_controller)
     
     
     while not menu.get_shutdown():
-        menu.display_menu(user_controller) 
+        menu.display_menu() 
         if menu.get_logged_in():
-            dashboard = DashboardMenu()
-            dashboard.set_user_controller(user_controller)
+            dashboard = DashboardMenu(user_controller, menu.get_user())
             dashboard.display()
     
     db.disconnect()

@@ -1,9 +1,9 @@
 from data.user import User
 
 class SignUpMenu:
-    def __init__(self, user_controller, user):
+    def __init__(self, user_controller):
         self.logged_in = False
-        self.user = user
+        self.user = None
         self.user_controller = user_controller
 
     def display_sign_up(self):
@@ -16,16 +16,21 @@ class SignUpMenu:
         new_user.set_password(password)
         new_user.set_email(email)
 
+        self.user_controller.create_user(new_user)
+
         if self.confirm_login():
             self.logged_in = True
             print("Log In Successful\n")
         else:
-            print(f"Thank you for signing up, {new_user.username}! Returning to Main Menu...")
+            print(f"Thank you for signing up, {new_user.get_username()}! Returning to Main Menu...")
 
         self.user = new_user
 
     def get_user(self):
         return self.user
+
+    def get_logged_in(self):
+        return self.logged_in
 
     def confirm_login(self):
         confirm_options = ["y", "n"]
