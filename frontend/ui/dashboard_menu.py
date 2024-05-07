@@ -1,18 +1,16 @@
-from .user_profile import user_profile
-class dashboard_menu:
-    def __init__(self) -> None:
-        self.user = None
+from .user_profile import UserProfile
+class DashboardMenu:
+    def __init__(self, user_controller, user) -> None:
+        self.user = user
         self.logged_in = False
         self.decision = False
-    
-    def set_user(self, user):
-        self.user = user
+        self.user_controller = user_controller
 
     def set_logged_in(self, logged_in):
         self.logged_in = logged_in
 
     def display(self):
-        print(f"Welcome {self.user} to your Dashboard")
+        print(f"Welcome {self.user.username} to your Dashboard")
         print("+-------------------------------------+")
         print("| 1. Profile | 2. Friends | 3. Search |")
         print("+-------------------------------------+")
@@ -26,8 +24,7 @@ class dashboard_menu:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
             if self.choice == "1":
-                profile = user_profile()
-                profile.set_user(self.user)
+                profile = UserProfile(self.user_controller, self.user)
                 profile.display()
             if self.choice == "2":
                 print("Visiting Friends.")

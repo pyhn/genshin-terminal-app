@@ -1,4 +1,4 @@
-class user:
+class User:
     def __init__(self) -> None:
         self._username = None
         self._password = None

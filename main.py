@@ -1,24 +1,30 @@
-from frontend.ui.main_menu import main_menu
+from frontend.ui.main_menu import MainMenu
 from frontend.banners import banners
-from frontend.ui.dashboard_menu import dashboard_menu
-from data.db_manager import db_manager
+from frontend.ui.dashboard_menu import DashboardMenu
+from data.db_manager import DatabaseManager
+from controllers.user_controller import UserController
+
 def main():
-    db = db_manager()
+    db = DatabaseManager()
     db.connect()
     db.create_user_table()
-    decor = banners
+    
+    decor = banners()
     decor.display_welcome()
-    menu = main_menu()
-    menu.display_menu()
-    if menu.get_shutdown():
-        db.disconnect()
-        print(f"System Shutting Down...")
-        exit()
-        
-    if menu.get_logged_in():
-        dashboard = dashboard_menu()
-        dashboard.set_logged_in(menu.get_logged_in())
-        dashboard.set_user(menu.get_user())
-        dashboard.display()
+    
+    user_controller = UserController(db)
+    menu = MainMenu()
+    
+    
+    while not menu.get_shutdown():
+        menu.display_menu(user_controller) 
+        if menu.get_logged_in():
+            dashboard = DashboardMenu()
+            dashboard.set_user_controller(user_controller)
+            dashboard.display()
+    
+    db.disconnect()
+    print("System Shutting Down...")
 
-main()
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,2 @@
+- table for forums
+- table for comments (includes replies)
