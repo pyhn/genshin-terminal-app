@@ -1,2 +1,2 @@
-- table for forums
-- table for comments (includes replies)
+- goals set on 05/07/2024:
+    - fix dashboard to get data from db
