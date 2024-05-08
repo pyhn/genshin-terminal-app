@@ -1,2 +1,4 @@
 - goals set on 05/07/2024:
     - fix dashboard to get data from db
+        - add exit option
+        - properly get data for user profile
