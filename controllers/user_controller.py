@@ -7,7 +7,8 @@ class UserController:
         password = new_user.get_password()
         email = new_user.get_email()
 
-        self.db_manager.create_new_user(username, password, email)
+        new_uid = self.db_manager.create_new_user(username, password, email)
+        return new_uid
 
     def get_user_pass_by_id(self, user_id):
         result = self.db_manager.get_user_pass_by_id(user_id)
@@ -17,6 +18,8 @@ class UserController:
         result = self.db_manager.get_user_info_by_id(user_id)
         return result
         
+    def update_user_info(self, user):
+        result = self.db_manager.update_user_info(user)
 
 
 

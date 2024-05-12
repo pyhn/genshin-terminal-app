@@ -1,8 +1,11 @@
+from .edit_user_profile import EditUserProfile
+
 class UserProfile:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
         self.user = user
-        self.choice = None
+        self.decision = False
+        self.viewing = True
         
 
     def display(self):
@@ -12,12 +15,13 @@ class UserProfile:
         print(f"Bio: {self.format_bio()}")
         print(f"Favourite Character: {self.user.get_fav_character()}")
         print(f"Favourite Region: {self.user.get_fav_region()}\n")
-        print(f"+-------------------------------------------------+")
-        print(f"| 1. Edit Profile | 2. User Preferences | 3. Exit |")
-        print(f"+-------------------------------------------------+")
 
-        choice = input("Enter Choice: ")
-        self.handle_menu_input(choice)
+        while self.decision == False:
+            print(f"+-------------------------------------------------+")
+            print(f"| 1. Edit Profile | 2. User Preferences | 3. Exit |")
+            print(f"+-------------------------------------------------+")
+            choice = input("Enter Choice: ")
+            self.handle_menu_input(choice)
             
     def format_bio(self):
         text = self.user.get_bio()
@@ -48,5 +52,17 @@ class UserProfile:
         if choice not in options:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
-            if self.choice == "1":
-                print(f"Editing Profile")
+            if choice == "1":
+                edit_profile = EditUserProfile(self.user_controller, self.user)
+                edit_profile.display()
+            if choice == "3":
+                print("Returning to Dashboard...")
+                self.viewing = False
+            
+            self.decision = True
+
+    def get_viewing(self):
+        return self.viewing
+
+
+        

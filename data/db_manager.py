@@ -61,6 +61,7 @@ class DatabaseManager:
         
         # Commit the transaction to make the changes persistent
         self.connection.commit()
+        return new_uid
 
     def get_user_pass_by_id(self, user_id):
         user_query = "SELECT username, password FROM users WHERE uid = ?"
@@ -90,5 +91,23 @@ class DatabaseManager:
             return user_info
         else:
             return None
+        
+    def update_user_info(self, user):
+        user_id = user.get_uid()
+        new_status = user.get_status()
+        new_bio = user.get_bio()
+        new_fav_char = user.get_fav_character()
+        new_fav_region = user.get_fav_region()
+
+        query = """
+        UPDATE users 
+        SET bio = ?, 
+            status = ?, 
+            fav_character = ?, 
+            fav_region = ?
+        WHERE uid = ?;
+        """
+        self.execute_update(query, (new_bio, new_status, new_fav_char, new_fav_region, user_id))
+        
 
 
