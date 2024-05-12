@@ -19,7 +19,7 @@ def main():
     while not menu.get_shutdown():
         menu.set_decision = False
         menu.display_menu() 
-        
+
         if menu.get_logged_in() and not dash_initalized:
             dashboard = DashboardMenu(user_controller, menu.get_user())
             dash_initalized = True
@@ -28,6 +28,7 @@ def main():
             dashboard.display()
         else:
             menu.set_logged_in(False)
+            menu.set_user(None)
     
     db.disconnect()
     print("System Shutting Down...")

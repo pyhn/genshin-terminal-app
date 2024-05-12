@@ -10,9 +10,9 @@ class MainMenu:
 
     def display_menu(self):
         while self.decision == False or self.logged_in == False:
-            print(f"1. Login")
-            print(f"2. Sign Up")
-            print(f"3. Exit")
+            print(f"+---------------------------------+")
+            print(f"| 1. Login | 2. Sign Up | 3. Exit |")
+            print(f"+---------------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
             if self.shutdown:
@@ -55,5 +55,8 @@ class MainMenu:
 
     def set_logged_in(self, logged_in):
         self.logged_in = logged_in
+
+    def set_user(self, user):
+        self.user = user
 
 
