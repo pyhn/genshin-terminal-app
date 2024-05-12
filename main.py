@@ -17,14 +17,16 @@ def main():
     
     dash_initalized = False
     while not menu.get_shutdown():
-        menu.set_decision = False
-        menu.display_menu() 
+        if not menu.get_logged_in():
+            menu.set_decision(False)
+            menu.display_menu() 
 
         if menu.get_logged_in() and not dash_initalized:
             dashboard = DashboardMenu(user_controller, menu.get_user())
             dash_initalized = True
 
         if dash_initalized and dashboard.get_logged_in():
+            dashboard.set_decision(False)
             dashboard.display()
         else:
             menu.set_logged_in(False)

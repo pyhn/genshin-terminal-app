@@ -6,10 +6,12 @@ class UserProfile:
         
 
     def display(self):
+        print()
+        print(f"[Welcome {self.user.get_username()}.]")
         print(f"Current Status: {self.user.get_status()}")
         print(f"Bio: {self.format_bio()}")
         print(f"Favourite Character: {self.user.get_fav_character()}")
-        print(f"Favourite Region: {self.user.get_fav_region()}")
+        print(f"Favourite Region: {self.user.get_fav_region()}\n")
         print(f"+-------------------------------------------------+")
         print(f"| 1. Edit Profile | 2. User Preferences | 3. Exit |")
         print(f"+-------------------------------------------------+")

@@ -10,8 +10,11 @@ class MainMenu:
 
     def display_menu(self):
         while self.decision == False or self.logged_in == False:
-            print(f"+---------------------------------+")
-            print(f"| 1. Login | 2. Sign Up | 3. Exit |")
+            print()
+            print(f"+-----------+")
+            print(f"| Main Menu |")
+            print(f"+-----------+---------------------+")
+            print(f"| 1. Login  | 2. Sign Up | 3. Exit |")
             print(f"+---------------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)

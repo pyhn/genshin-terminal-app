@@ -12,6 +12,7 @@ class DatabaseManager:
 
     def disconnect(self):
         if self.connection:
+            print()
             print("Closing Connection to Database...")
             self.connection.close()
 

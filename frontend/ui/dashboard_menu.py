@@ -13,8 +13,10 @@ class DashboardMenu:
         self.logged_in = logged_in
 
     def display(self):
-        print(f"Welcome {self.user.get_username()} to your Dashboard")
-        print("+-------------------------------------------------+")
+        print()
+        print("+------------+")
+        print("| Dashboard  |")
+        print("+------------+-----------------------------------+")
         print("| 1. Profile | 2. Friends | 3. Search | 4. Logout |")
         print("+-------------------------------------------------+")
         while self.decision == False:
@@ -39,5 +41,6 @@ class DashboardMenu:
 
             self.decision = True
 
-
+    def set_decision(self, decision):
+        self.decision = decision
         
