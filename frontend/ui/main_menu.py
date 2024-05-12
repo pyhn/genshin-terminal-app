@@ -49,5 +49,11 @@ class MainMenu:
 
     def get_user(self):
         return self.user
+    
+    def set_decision(self, decision):
+        self.decision = decision
+
+    def set_logged_in(self, logged_in):
+        self.logged_in = logged_in
 
 
