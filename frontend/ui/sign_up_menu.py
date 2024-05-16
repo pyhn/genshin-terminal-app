@@ -16,8 +16,9 @@ class SignUpMenu:
         new_user.set_password(password)
         new_user.set_email(email)
 
-        self.user_controller.create_user(new_user)
-
+        new_uid = self.user_controller.create_user(new_user)
+        new_user.set_uid(new_uid)
+        print(f"You User ID for Login is: {new_uid}")
         if self.confirm_login():
             self.logged_in = True
             print("Log In Successful\n")

@@ -1,5 +1,6 @@
 class User:
     def __init__(self) -> None:
+        self._uid = None
         self._username = None
         self._password = None
         self._email = None
@@ -9,6 +10,9 @@ class User:
         self._fav_region = None
 
     # setters
+    def set_uid(self, uid):
+        self._uid = uid
+
     def set_username(self, username):
         self._username = username
 
@@ -30,7 +34,10 @@ class User:
     def set_fav_region(self, fav_region):
         self._fav_region = fav_region
 
-    # setters
+    # getters
+    def get_uid(self):
+        return self._uid
+
     def get_username(self):
         return self._username
 

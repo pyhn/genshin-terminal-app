@@ -41,6 +41,7 @@ class LogInMenu:
 
         result = self.user_controller.get_user_info_by_id(user_id)
         user = User()
+        user.set_uid(user_id)
         user.set_username(result[1])
         user.set_password(result[2])
         user.set_email(result[3])

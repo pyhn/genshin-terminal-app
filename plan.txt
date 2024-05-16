@@ -1,2 +1,1 @@
-- goals set on 05/07/2024:
-    - fix dashboard to get data from db
+- fix bug that occurs after logging in then logging out
