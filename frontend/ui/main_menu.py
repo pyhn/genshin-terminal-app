@@ -13,9 +13,9 @@ class MainMenu:
             print()
             print(f"+-----------+")
             print(f"| Main Menu |")
-            print(f"+-----------+---------------------+")
+            print(f"+-----------+----------------------+")
             print(f"| 1. Login  | 2. Sign Up | 3. Exit |")
-            print(f"+---------------------------------+")
+            print(f"+----------------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
             if self.shutdown:

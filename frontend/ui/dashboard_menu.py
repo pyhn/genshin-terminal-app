@@ -1,8 +1,8 @@
 from .user_profile import UserProfile
 class DashboardMenu:
-    def __init__(self, user_controller, user) -> None:
-        self.user = user
-        self.logged_in = True
+    def __init__(self, user_controller) -> None:
+        self.user = None
+        self.logged_in = False
         self.decision = False
         self.user_controller = user_controller
         self.viewing = False
@@ -40,10 +40,14 @@ class DashboardMenu:
             if choice == "4":
                 print("Logging out...")
                 self.logged_in = False
+                self.user = None
                 self.viewing = True
 
             self.decision = True
 
     def set_decision(self, decision):
         self.decision = decision
+
+    def set_user(self, user):
+        self.user = user
         
