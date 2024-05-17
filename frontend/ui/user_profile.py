@@ -1,4 +1,5 @@
 from .edit_user_profile import EditUserProfile
+from .user_preferences import UserPreferences
 
 class UserProfile:
     def __init__(self, user_controller, user) -> None:
@@ -16,15 +17,21 @@ class UserProfile:
         print(f"Favourite Character: {self.user.get_fav_character()}")
         print(f"Favourite Region: {self.user.get_fav_region()}\n")
 
-        while self.decision == False:
-            print(f"+-------------------------------------------------+")
-            print(f"| 1. Edit Profile | 2. User Preferences | 3. Exit |")
-            print(f"+-------------------------------------------------+")
+
+        while self.decision == False or self.viewing == True:
+            print(f"+------------------------+")
+            print(f"| 1. Edit Profile        |")
+            print(f"+------------------------+")
+            print(f"| 2. User Preferences    |")
+            print(f"+------------------------+")
+            print(f"| 3. Return to Dashboard |")
+            print(f"+------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
             
     def format_bio(self):
         text = self.user.get_bio()
+        formated_text = ""
         if text != None:
             lines = []
             max_width = 25
@@ -43,7 +50,8 @@ class UserProfile:
             lines.append(remaining_text)  # Add the remaining text as the last line
 
             for line in lines:
-                print(line)
+                formated_text += line + "\n"
+            return formated_text
         else:
             return None
 
@@ -55,6 +63,9 @@ class UserProfile:
             if choice == "1":
                 edit_profile = EditUserProfile(self.user_controller, self.user)
                 edit_profile.display()
+            if choice == "2":
+                user_pref = UserPreferences(self.user_controller, self.user)
+                user_pref.display()
             if choice == "3":
                 print("Returning to Dashboard...")
                 self.viewing = False

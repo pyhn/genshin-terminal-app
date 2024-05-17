@@ -19,7 +19,10 @@ class UserController:
         return result
         
     def update_user_info(self, user):
-        result = self.db_manager.update_user_info(user)
+        self.db_manager.update_user_info(user)
+
+    def update_user_pref(self, user):
+        self.db_manager.update_user_pref(user)
 
 
 

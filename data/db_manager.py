@@ -109,5 +109,20 @@ class DatabaseManager:
         """
         self.execute_update(query, (new_bio, new_status, new_fav_char, new_fav_region, user_id))
         
+    def update_user_pref(self, user):
+        user_id = user.get_uid()
+        new_username = user.get_username()
+        new_password = user.get_password()
+        new_email = user.get_email()
+
+        query = """
+        UPDATE users 
+        SET username = ?, 
+            password = ?, 
+            email = ?
+        WHERE uid = ?;
+        """
+        self.execute_update(query, (new_username, new_password, new_email, user_id))
+
 
 

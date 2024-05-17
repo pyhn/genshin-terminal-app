@@ -1,4 +1,5 @@
 from .user_profile import UserProfile
+from .friends_menu import FriendsMenu
 class DashboardMenu:
     def __init__(self, user_controller) -> None:
         self.user = None
@@ -14,7 +15,7 @@ class DashboardMenu:
         self.logged_in = logged_in
 
     def display(self):
-        while self.decision == False or self.viewing == False:
+        while self.decision == False and self.viewing == False:
             print()
             print("+------------+")
             print("| Dashboard  |")
@@ -34,7 +35,10 @@ class DashboardMenu:
                 profile.display()
                 self.viewing = profile.get_viewing()
             if choice == "2":
-                print("Visiting Friends.")
+                friends_menu = FriendsMenu(self.user_controller, self.user)
+                friends_menu.display()
+                self.viewing = friends_menu.get_viewing()
+                
             if choice == "3":
                 print("Visiting Search.")
             if choice == "4":
