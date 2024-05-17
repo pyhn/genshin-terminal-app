@@ -7,13 +7,13 @@ from controllers.user_controller import UserController
 def main():
     db = DatabaseManager()
     db.connect()
-    # db.drop_table("users")
-    # db.drop_table("friends")
-    # db.drop_table("friend_requests")
+    db.drop_table("users")
+    db.drop_table("friends")
+    db.drop_table("friend_requests")
     db.create_user_table()
     db.create_friend_request_table()
     db.create_friends_table()
-    # db.insert_test_users()
+    db.insert_test_data()
     
     decor = banners
     decor.display_welcome()

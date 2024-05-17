@@ -7,15 +7,20 @@ class UserNotifications:
         self.requests = requests
 
     def display(self):
-        req_count = len(self.requests)
-        if req_count == 0:
-            input("You have 0 Notifcations. Press Enter to Return to Dashboard.")
-        else:
-            while self.decision == False or self.viewing == True:
-                for i, entry in enumerate(self.requests):
-                    print(f"{i + 1}. {entry[0]} has sent you a friend request!")
-                choice = input("Enter Choice (Enter to Return to Dashboard): ")
-                self.handle_menu_input(choice)
+        while self.decision == False or self.viewing == True:
+            req_count = len(self.requests)
+            print("+------------------------------------+")
+            print("| Welcome to your Notifications Page |")
+            print("+------------------------------------+")
+
+            if req_count == 0:
+                input("You have 0 Notifcations. Press Enter to Return to Dashboard.")
+                break
+
+            for i, entry in enumerate(self.requests):
+                print(f"{i + 1}. {entry[0]} has sent you a friend request!")
+            choice = input("Enter Choice [or Enter to Return to Dashboard]: ")
+            self.handle_menu_input(choice)
 
 
     def handle_menu_input(self, choice):
@@ -49,6 +54,8 @@ class UserNotifications:
             del self.requests[index]
             print("Friend Request Accepted!")
         if confirm_input == "n":
+            self.user_controller.reject_friend_request(requester_id, requestee_id)
+            del self.requests[index]
             print("Friend Request Rejected!")
 
     def get_viewing(self):
