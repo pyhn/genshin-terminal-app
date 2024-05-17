@@ -41,6 +41,10 @@ class UserController:
     def reject_friend_request(self, requester, requestee):
         self.db_manager.reject_friend_request(requester, requestee)
 
+    def retrieve_friends_list(self, user):
+        result = self.db_manager.retrieve_friends_list(user)
+        return result
+
 
 
 

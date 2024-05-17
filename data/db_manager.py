@@ -64,11 +64,11 @@ class DatabaseManager:
     def create_friends_table(self):
         query = '''
         CREATE TABLE IF NOT EXISTS friends (
-            user_id INTEGER,
+            uid INTEGER,
             friend_id INTEGER,
-            start_date DATE,
-            PRIMARY KEY (user_id, friend_id),
-            FOREIGN KEY (user_id) REFERENCES users(uid) ON DELETE CASCADE,
+            start_date DATE DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (uid, friend_id),
+            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
             FOREIGN KEY (friend_id) REFERENCES users(uid) ON DELETE CASCADE
         );
     '''
@@ -78,7 +78,7 @@ class DatabaseManager:
         query = f"DROP TABLE IF EXISTS {table}"
         self.execute_update(query)
 
-    def insert_test_users(self):
+    def insert_test_data(self):
         self.cursor.execute("""
             INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -94,6 +94,21 @@ class DatabaseManager:
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (3, "jin", "pog", "poggies", None, None, None, None))
 
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (4, "eli", "pog", "poggier", None, None, None, None))
+
+        self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (1, 4))
+        self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (2, 4))
+        self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (3, 4))
+        
+        insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
+        self.execute_update(insert_query, (2, 3))
+        self.execute_update(insert_query, (3, 2))
+        self.execute_update(insert_query, (2, 1))
+        self.execute_update(insert_query, (1, 2))
+        
         self.connection.commit()
 
 
@@ -210,7 +225,7 @@ class DatabaseManager:
 
         self.execute_update(update_query, (requester, requestee))
 
-        insert_query = """INSERT INTO friends (user_id, friend_id) VALUES (?, ?);"""
+        insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
         self.execute_update(insert_query, (requester, requestee))
         self.execute_update(insert_query, (requestee, requester))
     
@@ -221,3 +236,18 @@ class DatabaseManager:
         WHERE requester_id = ? AND requestee_id = ?;
         """
         self.execute_update(update_query, (requester, requestee))
+
+    def retrieve_friends_list(self, user):
+        uid = user.get_uid()
+        query = """
+        SELECT u.*
+        FROM users u
+        JOIN friends f ON u.uid = f.friend_id
+        WHERE f.uid = ?;
+        """
+
+        results = self.execute_query(query, (uid,))
+        if results:
+            return results
+        else:
+            return []

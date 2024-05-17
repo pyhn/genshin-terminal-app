@@ -1,3 +1,5 @@
+from .friends_list import FriendsList
+
 class FriendsMenu:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -27,6 +29,10 @@ class FriendsMenu:
         if choice not in options:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
+            if choice == "1":
+                friends_list = FriendsList(self.user_controller, self.user)
+                friends_list.display()
+                # self.viewing = friends_list.get_viewing()
             if choice == "3":
                 self.add_by_id()
             if choice == "4":
