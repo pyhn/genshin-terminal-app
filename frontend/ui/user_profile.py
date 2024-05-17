@@ -17,10 +17,15 @@ class UserProfile:
         print(f"Favourite Character: {self.user.get_fav_character()}")
         print(f"Favourite Region: {self.user.get_fav_region()}\n")
 
-        while self.decision == False and self.viewing == False:
-            print(f"+-------------------------------------------------+")
-            print(f"| 1. Edit Profile | 2. User Preferences | 3. Exit |")
-            print(f"+-------------------------------------------------+")
+
+        while self.decision == False or self.viewing == True:
+            print(f"+------------------------+")
+            print(f"| 1. Edit Profile        |")
+            print(f"+------------------------+")
+            print(f"| 2. User Preferences    |")
+            print(f"+------------------------+")
+            print(f"| 3. Return to Dashboard |")
+            print(f"+------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
             
