@@ -7,7 +7,13 @@ from controllers.user_controller import UserController
 def main():
     db = DatabaseManager()
     db.connect()
+    # db.drop_table("users")
+    # db.drop_table("friends")
+    # db.drop_table("friend_requests")
     db.create_user_table()
+    db.create_friend_request_table()
+    db.create_friends_table()
+    # db.insert_test_users()
     
     decor = banners
     decor.display_welcome()
@@ -26,10 +32,13 @@ def main():
             menu.display_menu()
         
         if menu.get_logged_in and not menu.get_shutdown():
+            dashboard.set_default()
             dashboard.set_logged_in(True)
             dashboard.set_user(menu.get_user())
-            dashboard.set_decision(False)
+            dashboard.check_friend_requests()
             dashboard.display()
+        
+        
 
     db.disconnect()
     print("System Shutting Down...")

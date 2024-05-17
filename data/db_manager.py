@@ -9,6 +9,7 @@ class DatabaseManager:
     def connect(self):
         self.connection = sqlite3.connect(self.db_name)
         self.cursor = self.connection.cursor()
+        self.cursor.execute("PRAGMA foreign_keys = ON;")
 
     def disconnect(self):
         if self.connection:
@@ -44,6 +45,57 @@ class DatabaseManager:
         );
         '''
         self.execute_update(create_table_query)
+
+    def create_friend_request_table(self):
+        query = '''
+        CREATE TABLE IF NOT EXISTS friend_requests (
+            request_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            requester_id INTEGER,
+            requestee_id INTEGER,
+            request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            status TEXT DEFAULT 'pending',
+            FOREIGN KEY (requester_id) REFERENCES users(uid) ON DELETE CASCADE,
+            FOREIGN KEY (requestee_id) REFERENCES users(uid) ON DELETE CASCADE, 
+            UNIQUE(requester_id, requestee_id)
+        );
+        '''
+        self.execute_update(query)
+
+    def create_friends_table(self):
+        query = '''
+        CREATE TABLE IF NOT EXISTS friends (
+            user_id INTEGER,
+            friend_id INTEGER,
+            start_date DATE,
+            PRIMARY KEY (user_id, friend_id),
+            FOREIGN KEY (user_id) REFERENCES users(uid) ON DELETE CASCADE,
+            FOREIGN KEY (friend_id) REFERENCES users(uid) ON DELETE CASCADE
+        );
+    '''
+        self.execute_update(query)
+
+    def drop_table(self, table):
+        query = f"DROP TABLE IF EXISTS {table}"
+        self.execute_update(query)
+
+    def insert_test_users(self):
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (1, "rei", "pog", "pogger", None, None, None, None))
+
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (2, "pogi", "pog", "pogged", None, None, None, None))
+
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (3, "jin", "pog", "poggies", None, None, None, None))
+
+        self.connection.commit()
+
 
     def create_new_user(self, username, password, email, status=None, bio=None, fav_character=None, fav_region=None):
         # Get the maximum user ID currently in the table
@@ -124,5 +176,48 @@ class DatabaseManager:
         """
         self.execute_update(query, (new_username, new_password, new_email, user_id))
 
+    def send_friend_request(self, requester, requestee):
+        try:
+            query = """
+            INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?) 
+            """
+            self.execute_update(query, (requester, requestee))
+            print("Friend Request Sent. Returning to Friends Menu...")
+        except sqlite3.IntegrityError as e:
+            print(f"Failed to send friend request. Returning to Friends Menu.")
 
+    def check_friend_requests(self, user):
+        uid = user.get_uid()
+        query = """
+        SELECT fr.*, u.username
+        FROM friend_requests fr
+        JOIN users u ON fr.requester_id = u.uid
+        WHERE fr.requestee_id = ? AND fr.status = 'pending';
+        """
+        results = self.execute_query(query, (uid,))
 
+        if results:
+            return results
+        else:
+            return None
+        
+    def accept_friend_request(self, requester, requestee):
+        update_query = """
+        UPDATE friend_requests
+        SET status = 'accepted'
+        WHERE requester_id = ? AND requestee_id = ?;
+        """
+
+        self.execute_update(update_query, (requester, requestee))
+
+        insert_query = """INSERT INTO friends (user_id, friend_id) VALUES (?, ?);"""
+        self.execute_update(insert_query, (requester, requestee))
+        self.execute_update(insert_query, (requestee, requester))
+    
+    def reject_friend_request(self, requester, requestee):
+        update_query = """
+        UPDATE friend_requests
+        SET status = 'rejected'
+        WHERE requester_id = ? AND requestee_id = ?;
+        """
+        self.execute_update(update_query, (requester, requestee))

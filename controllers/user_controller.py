@@ -24,5 +24,23 @@ class UserController:
     def update_user_pref(self, user):
         self.db_manager.update_user_pref(user)
 
+    def send_friend_request(self, requester, requestee):
+        self.db_manager.send_friend_request(requester, requestee)
+
+    def check_friend_requests(self, user):
+        results = self.db_manager.check_friend_requests(user)
+        requests = []
+        if results:
+            for user_obj in results:
+                requests.append((user_obj[5], user_obj[1]))
+        return requests
+    
+    def accept_friend_request(self, requester, requestee):
+        self.db_manager.accept_friend_request(requester, requestee)
+    
+    def reject_friend_request(self, requester, requestee):
+        self.db_manager.reject_friend_request(requester, requestee)
+
+
 
 
