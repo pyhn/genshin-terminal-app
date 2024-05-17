@@ -42,18 +42,22 @@ class FriendsMenu:
         confirmed = False
         while not confirmed:
             user_id = input(f"Enter User ID: ")
-            result = self.user_controller.get_user_info_by_id(user_id)
-            if result == None:
-                print("Invalid User ID")
+            if user_id == self.user.get_uid():
+                print("You cannot add yourself.")
             else:
-                username = result[1]
-                confirm_input = input(f"Add {username}? (y/n): ").lower().strip()
-
-                while confirm_input not in ["y", "n"]:
-                    print("Please choose a valid option.")
+                result = self.user_controller.get_user_info_by_id(user_id)
+                if result == None:
+                    print("Invalid User ID")
+                else:
+                    username = result[1]
                     confirm_input = input(f"Add {username}? (y/n): ").lower().strip()
 
-                if confirm_input == "y":
-                    confirmed = True
-                    print("Friend Request Sent. Returning to Friends Menu...")
+                    while confirm_input not in ["y", "n"]:
+                        print("Please choose a valid option.")
+                        confirm_input = input(f"Add {username}? (y/n): ").lower().strip()
+
+                    if confirm_input == "y":
+                        confirmed = True
+                        self.user_controller.send_friend_request(self.user.get_uid(), user_id)
+                    
                     
