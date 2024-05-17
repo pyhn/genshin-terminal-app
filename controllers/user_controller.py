@@ -44,6 +44,16 @@ class UserController:
     def retrieve_friends_list(self, user):
         result = self.db_manager.retrieve_friends_list(user)
         return result
+    
+    def retrieve_friends_list_only_id(self, user):
+        result = self.db_manager.retrieve_friends_list_only_id(user)
+        if len(result) > 0:
+            new_result = []
+            for friend in result:
+                new_result.append(str(friend[0]))
+            result = new_result
+            
+        return result
 
 
 

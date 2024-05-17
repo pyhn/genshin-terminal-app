@@ -251,3 +251,18 @@ class DatabaseManager:
             return results
         else:
             return []
+        
+    def retrieve_friends_list_only_id(self, user):
+        uid = user.get_uid()
+        query = """
+        SELECT u.uid
+        FROM users u
+        JOIN friends f ON u.uid = f.friend_id
+        WHERE f.uid = ?;
+        """
+
+        results = self.execute_query(query, (uid,))
+        if results:
+            return results
+        else:
+            return []
