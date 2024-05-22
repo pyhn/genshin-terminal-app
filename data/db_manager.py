@@ -74,6 +74,34 @@ class DatabaseManager:
     '''
         self.execute_update(query)
 
+    def create_posts_table(self):
+        query = '''
+        CREATE TABLE IF NOT EXISTS posts (
+            pid INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            uid INTEGER,
+            post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
+            );
+                '''
+        self.execute_update(query)
+
+    def create_comments_table(self):
+        query = '''
+            CREATE TABLE IF NOT EXISTS comments (
+            cid INTEGER PRIMARY KEY AUTOINCREMENT,
+            uid INTEGER,
+            replyto INTEGER DEFAULT NULL,
+            pid INTEGER,
+            comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            text TEXT NOT NULL,
+            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+            FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
+            FOREIGN KEY (replyto) REFERENCES users(uid) ON DELETE CASCADE
+        );
+        '''
+        self.execute_update(query)
     def drop_table(self, table):
         query = f"DROP TABLE IF EXISTS {table}"
         self.execute_update(query)
@@ -87,7 +115,7 @@ class DatabaseManager:
         self.cursor.execute("""
             INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (2, "pogi", "pog", "pogged", None, None, None, None))
+        """, (2, "pogi", "pog", "pogged", "dying", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vehicula varius tincidunt. Integer dui nibh, iaculis quis diam et, aliquam eleifend justo. Aenean nec est sed ex malesuada imperdiet sed a erat. Sed at maximus urna, fermentum pretium orci. Donec facilisis dignissim libero, vitae sagittis sapien porta quis. Maecenas quis nisi sit amet justo sagittis laoreet viverra id nisi. Etiam vehicula tempus cursus. Aenean dignissim augue at augue scelerisque consectetur. Fusce tempus, est ac ornare consequat, purus ante pellentesque mauris, sit amet euismod metus est non ex. Pellentesque quis purus dapibus, tempus enim ac, facilisis dolor.", "Bennett", "Liyue"))
 
         self.cursor.execute("""
             INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)

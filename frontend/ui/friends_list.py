@@ -35,9 +35,46 @@ class FriendsList:
             try:
                 choice = int(choice)
                 if 0 < choice <= len(self.friends_list):
-                    self.handle_friend_request(choice)
+                    self.handle_friend_choice(choice)
                 else:
                     raise ValueError
             except ValueError:
                 print("Invalid Choice. Please Select a Valid Option.\n")
         self.decision = True
+    
+    def handle_friend_choice(self, choice):
+        index = choice - 1
+        friend_info = self.friends_list[index]
+        friend_name = friend_info[1]
+        friend_bio = friend_info[5]
+        friend_fav_char = friend_info[6]
+        friend_fav_region = friend_info[7]
+        print(f"User: {friend_name}")
+        print(f"Bio: {self.format_bio(friend_bio)}")
+        print(f"Favourite Character: {friend_fav_char}")
+        print(f"Favourite Region: {friend_fav_region}")
+
+    def format_bio(self, text):
+        formated_text = ""
+        if text != None:
+            lines = []
+            max_width = 50
+            remaining_text = text
+            while len(remaining_text) > max_width:
+                # Find the index of the last space within the max_width
+                last_space_index = remaining_text.rfind(' ', 0, max_width)
+                if last_space_index == -1:
+                    # No space found within max_width, break the word
+                    lines.append(remaining_text[:max_width])
+                    remaining_text = remaining_text[max_width:]
+                else:
+                    # Split the text at the last space within max_width
+                    lines.append(remaining_text[:last_space_index])
+                    remaining_text = remaining_text[last_space_index + 1:]
+            lines.append(remaining_text)  # Add the remaining text as the last line
+
+            for line in lines:
+                formated_text += line + "\n"
+            return formated_text
+        else:
+            return None
