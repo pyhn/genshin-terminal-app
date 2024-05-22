@@ -181,10 +181,8 @@ class DatabaseManager:
 
         # Check if the result contains any rows
         if result:
-            # Extract the username and password from the first tuple in the result
             user_info = result[0]
             
-            # Use the username and password as needed
             return user_info
         else:
             return None
