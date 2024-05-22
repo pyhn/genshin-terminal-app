@@ -1,6 +1,7 @@
 from .user_profile import UserProfile
 from .friends_menu import FriendsMenu
 from .user_notifications import UserNotifications
+from .posts_menu import PostsMenu
 class DashboardMenu:
     def __init__(self, user_controller) -> None:
         self.user = None
@@ -28,19 +29,19 @@ class DashboardMenu:
     def display(self):
         while self.decision == False and self.viewing == False:
             count_len = len(str(self.notif_count))
-            num_spaces = max(30 - count_len, 0)
+            num_spaces = max(41 - count_len, 0)
             dash_string = f"| Dashboard   | You have {self.notif_count} Notifications " + " " * num_spaces + "|" 
             print()
-            print("+-------------+-------------------------------------------------------+")
+            print("+-------------+------------------------------------------------------------------+")
             print(dash_string)
-            print("+-------------+-------------------------------------------------------+")
-            print("| 1. Profile  | 2. Friends | 3. Search | 4. Notifications | 5. Logout |")
-            print("+---------------------------------------------------------------------+")
+            print("+-------------+------------------------------------------------------------------+")
+            print("| 1. Profile  | 2. Friends | 3. Posts | 4. Search | 5. Notifications | 6. Logout |")
+            print("+-------------+------------------------------------------------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
 
     def handle_menu_input(self, choice):
-        options = ["1","2","3","4","5"]
+        options = ["1","2","3","4","5","6"]
         if choice not in options:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
@@ -48,20 +49,26 @@ class DashboardMenu:
                 profile = UserProfile(self.user_controller, self.user)
                 profile.display()
                 self.viewing = profile.get_viewing()
+
             if choice == "2":
                 friends_menu = FriendsMenu(self.user_controller, self.user)
                 friends_menu.display()
                 self.viewing = friends_menu.get_viewing()
 
             if choice == "3":
-                print("Visiting Search.")
+                posts_menu = PostsMenu(self.user_controller, self.user)
+                posts_menu.display()
+                self.viewing = posts_menu.get_viewing()
 
             if choice == "4":
+                print("Visiting Search.")
+
+            if choice == "5":
                 notifs = UserNotifications(self.user_controller, self.user, self.requests)
                 notifs.display()
                 self.viewing = notifs.get_viewing()
                 
-            if choice == "5":
+            if choice == "6":
                 print("Logging out...")
                 self.logged_in = False
                 self.user = None

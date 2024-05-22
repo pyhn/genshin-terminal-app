@@ -34,7 +34,7 @@ class UserProfile:
         formated_text = ""
         if text != None:
             lines = []
-            max_width = 25
+            max_width = 50
             remaining_text = text
             while len(remaining_text) > max_width:
                 # Find the index of the last space within the max_width

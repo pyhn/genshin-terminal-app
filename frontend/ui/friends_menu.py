@@ -35,6 +35,7 @@ class FriendsMenu:
                 # self.viewing = friends_list.get_viewing()
             if choice == "3":
                 self.add_by_id()
+                return
             if choice == "4":
                 print("Returning to Dashboard...")
                 self.viewing = False
@@ -43,13 +44,19 @@ class FriendsMenu:
 
     def get_viewing(self):
         return self.viewing
-    
+
     def add_by_id(self):
         confirmed = False
+        friends_list = self.user_controller.retrieve_friends_list_only_id(self.user)
         while not confirmed:
-            user_id = input(f"Enter User ID: ")
+            user_id = input(f"Enter User ID (or Press Enter to Return to Friends Menu): ")
+            if user_id.strip() == "":
+                break
+
             if user_id == self.user.get_uid():
                 print("You cannot add yourself.")
+            elif user_id in friends_list:
+                print("You already added this user!")
             else:
                 result = self.user_controller.get_user_info_by_id(user_id)
                 if result == None:
