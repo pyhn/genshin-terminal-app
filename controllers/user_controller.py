@@ -54,7 +54,19 @@ class UserController:
             result = new_result
             
         return result
+    
+    def create_post(self, user, title, content):
+        self.db_manager.create_post(user, title, content)
 
+    def retrieve_posts_list(self, user):
+        result = self.db_manager.retrieve_posts_list(user)
+        return result
+    
+    def delete_post(self, pid):
+        self.db_manager.delete_post(pid)
 
+    def retrieve_friends_posts(self, user):
+        result = self.db_manager.retrieve_friends_posts(user)
+        return result
 
 

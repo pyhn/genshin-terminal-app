@@ -131,6 +131,8 @@ class DatabaseManager:
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (2, 4))
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (3, 4))
         
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Lorem Ippsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vehicula varius tincidunt. Integer dui nibh, iaculis quis diam et, aliquam eleifend justo. Aenean nec est sed ex malesuada imperdiet sed a erat. Sed at maximus urna, fermentum pretium orci. Donec facilisis dignissim libero, vitae sagittis sapien porta quis. Maecenas quis nisi sit amet justo sagittis laoreet viverra id nisi. Etiam vehicula tempus cursus. Aenean dignissim augue at augue scelerisque consectetur. Fusce tempus, est ac ornare consequat, purus ante pellentesque mauris, sit amet euismod metus est non ex. Pellentesque quis purus dapibus, tempus enim ac, facilisis dolor.", 1))
+
         insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
         self.execute_update(insert_query, (2, 3))
         self.execute_update(insert_query, (3, 2))
@@ -179,10 +181,8 @@ class DatabaseManager:
 
         # Check if the result contains any rows
         if result:
-            # Extract the username and password from the first tuple in the result
             user_info = result[0]
             
-            # Use the username and password as needed
             return user_info
         else:
             return None
@@ -289,6 +289,45 @@ class DatabaseManager:
         WHERE f.uid = ?;
         """
 
+        results = self.execute_query(query, (uid,))
+        if results:
+            return results
+        else:
+            return []
+        
+    def create_post(self, user, title, content):
+        uid = user.get_uid()
+        query = '''
+        INSERT INTO posts (title, body, uid) VALUES (?, ?, ?);
+        '''
+        self.execute_update(query, (title, content, uid))
+
+    def retrieve_posts_list(self, user):
+        uid = user.get_uid()
+        query = """
+        SELECT p.*
+        FROM posts p
+        WHERE p.uid = ?;
+        """
+
+        results = self.execute_query(query, (uid,))
+        if results:
+            return results
+        else:
+            return []
+        
+    def delete_post(self, pid):
+        delete_query = "DELETE FROM posts WHERE pid = ?;"
+        self.execute_update(delete_query, (pid,))
+
+    def retrieve_friends_posts(self, user):
+        uid = user.get_uid()
+        query = """
+        SELECT p.*
+        FROM posts p
+        JOIN friends f ON p.uid = f.friend_id
+        WHERE f.uid = ?;
+        """
         results = self.execute_query(query, (uid,))
         if results:
             return results

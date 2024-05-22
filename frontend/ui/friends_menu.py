@@ -1,5 +1,5 @@
 from .friends_list import FriendsList
-
+from .friends_activity import FriendsActivity
 class FriendsMenu:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -33,6 +33,10 @@ class FriendsMenu:
                 friends_list = FriendsList(self.user_controller, self.user)
                 friends_list.display()
                 # self.viewing = friends_list.get_viewing()
+            if choice == "2":
+                friends_activity = FriendsActivity(self.user_controller, self.user)
+                friends_activity.display()
+
             if choice == "3":
                 self.add_by_id()
                 return
