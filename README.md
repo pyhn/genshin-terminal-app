@@ -18,31 +18,15 @@ Genshin Terminal App is a terminal-based application designed to manage user pro
     cd genshin-terminal-app
     ```
 
-2. **Create a Virtual Environment**:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
-
-3. **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. **Set Up the Database**:
+2. **Set Up the Database**:
     Run the following Python script to create the necessary tables and insert test data.
-    ```bash
-    python setup_database.py
-    ```
-
-## Usage
-
-1. **Run the Database Generator (First Time)**:
     ```bash
     python create_db.py
     ```
 
-2. **Run the Application**:
+## Usage
+
+1. **Run the Application**:
     ```bash
     python main.py
     ```
