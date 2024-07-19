@@ -68,5 +68,12 @@ class UserController:
     def retrieve_friends_posts(self, user):
         result = self.db_manager.retrieve_friends_posts(user)
         return result
+    
+    def comment_to_post(self, uid, pid, content):
+        self.db_manager.comment_to_post(uid, pid, content)
+
+    def retrieve_comments(self, pid):
+        result = self.db_manager.retrieve_comments(pid)
+        return result
 
 

@@ -96,6 +96,8 @@ class DatabaseManager:
             pid INTEGER,
             comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             text TEXT NOT NULL,
+            likes INTEGER DEFAULT 0,
+            dislikes INTEGER DEFAULT 0,
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
             FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
             FOREIGN KEY (replyto) REFERENCES users(uid) ON DELETE CASCADE
@@ -132,6 +134,8 @@ class DatabaseManager:
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (3, 4))
         
         self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Lorem Ippsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vehicula varius tincidunt. Integer dui nibh, iaculis quis diam et, aliquam eleifend justo. Aenean nec est sed ex malesuada imperdiet sed a erat. Sed at maximus urna, fermentum pretium orci. Donec facilisis dignissim libero, vitae sagittis sapien porta quis. Maecenas quis nisi sit amet justo sagittis laoreet viverra id nisi. Etiam vehicula tempus cursus. Aenean dignissim augue at augue scelerisque consectetur. Fusce tempus, est ac ornare consequat, purus ante pellentesque mauris, sit amet euismod metus est non ex. Pellentesque quis purus dapibus, tempus enim ac, facilisis dolor.", 1))
+        
+        self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "HALLLLLLOOOOOOOOO :D HALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :D"))
 
         insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
         self.execute_update(insert_query, (2, 3))
@@ -329,6 +333,23 @@ class DatabaseManager:
         WHERE f.uid = ?;
         """
         results = self.execute_query(query, (uid,))
+        if results:
+            return results
+        else:
+            return []
+        
+    def comment_to_post(self, uid, pid, content):
+        query = '''
+        INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?);
+        '''
+        self.execute_update(query, (uid, pid, content))
+
+    def retrieve_comments(self, pid):
+        query = """
+        SELECT * 
+        FROM comments 
+        WHERE pid = ?;"""
+        results = self.execute_query(query, (pid,))
         if results:
             return results
         else:
