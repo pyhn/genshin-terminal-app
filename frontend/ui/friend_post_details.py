@@ -1,3 +1,5 @@
+from .post_comments import PostComments
+
 class FriendPostDetails:
     def __init__(self, user_controller, user, post_info) -> None:
         self.user_controller = user_controller
@@ -32,9 +34,10 @@ class FriendPostDetails:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
             if choice == "1":
-                pass
+                post_comments = PostComments(self.user_controller, self.post_info[0])
+                post_comments.display()
             if choice == "2":
-                pass
+                self.commenting()
             if choice == "3":
                 print("Returning to Friends Activity...")
                 self.viewing = False
@@ -69,3 +72,23 @@ class FriendPostDetails:
         else:
             return None
         
+    def commenting(self):
+        content = self.acquire_comment_info("Comment Content")
+        uid = self.user.get_uid()
+        pid = self.post_info[0]
+        self.user_controller.comment_to_post(uid, pid, content)
+        print("Returning to Post...")
+
+    def acquire_comment_info(self, info_type):
+        confirmed = False
+        while not confirmed:
+            user_input = input(f"Enter Desired {info_type.capitalize()}: ")
+            confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
+
+            while confirm_input not in ["y", "n"]:
+                print("Please choose a valid option.")
+                confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
+
+            if confirm_input == "y":
+                confirmed = True
+                return user_input
