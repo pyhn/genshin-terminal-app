@@ -1,3 +1,6 @@
+from backend.utils import Utils
+
+
 class UserPreferences:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -34,22 +37,8 @@ class UserPreferences:
                 return
 
             self.decision = True
-            new_info = self.acquire_user_input(info_type)
+            new_info = Utils.acquire_string_input("New", info_type)
             self.update_user(info_type, new_info)
-    
-    def acquire_user_input(self, info_type):
-        confirmed = False
-        while not confirmed:
-            user_input = input(f"Enter New {info_type.capitalize()}: ")
-            confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
-
-            while confirm_input not in ["y", "n"]:
-                print("Please choose a valid option.")
-                confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
-
-            if confirm_input == "y":
-                confirmed = True
-                return user_input
     
     def update_user(self, info_type, new_info):
         if info_type == "Username":

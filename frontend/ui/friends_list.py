@@ -1,3 +1,5 @@
+from backend.utils import Utils
+
 class FriendsList:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -50,31 +52,7 @@ class FriendsList:
         friend_fav_char = friend_info[6]
         friend_fav_region = friend_info[7]
         print(f"User: {friend_name}")
-        print(f"Bio: {self.format_bio(friend_bio)}")
+        print(f"Bio: {Utils.format_content(friend_bio)}")
         print(f"Favourite Character: {friend_fav_char}")
         print(f"Favourite Region: {friend_fav_region}")
 
-    def format_bio(self, text):
-        formated_text = ""
-        if text != None:
-            lines = []
-            max_width = 50
-            remaining_text = text
-            while len(remaining_text) > max_width:
-                # Find the index of the last space within the max_width
-                last_space_index = remaining_text.rfind(' ', 0, max_width)
-                if last_space_index == -1:
-                    # No space found within max_width, break the word
-                    lines.append(remaining_text[:max_width])
-                    remaining_text = remaining_text[max_width:]
-                else:
-                    # Split the text at the last space within max_width
-                    lines.append(remaining_text[:last_space_index])
-                    remaining_text = remaining_text[last_space_index + 1:]
-            lines.append(remaining_text)  # Add the remaining text as the last line
-
-            for line in lines:
-                formated_text += line + "\n"
-            return formated_text
-        else:
-            return None

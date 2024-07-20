@@ -1,4 +1,6 @@
 from data.user import User
+from backend.utils import Utils
+
 
 class SignUpMenu:
     def __init__(self, user_controller):
@@ -7,9 +9,9 @@ class SignUpMenu:
         self.user_controller = user_controller
 
     def display_sign_up(self):
-        username = self.acquire_user_info("username")
-        password = self.acquire_user_info("password")
-        email = self.acquire_user_info("email")
+        username = Utils.acquire_string_input("Desired", "username")
+        password = Utils.acquire_string_input("Desired", "password")
+        email = Utils.acquire_string_input("Desired", "email")
 
         new_user = User()
         new_user.set_username(username)
@@ -40,17 +42,3 @@ class SignUpMenu:
             print("Please choose a valid option.")
             confirm_login = input("Log In? (y/n): ").lower().strip()
         return confirm_login == confirm_options[0]
-
-    def acquire_user_info(self, info_type):
-        confirmed = False
-        while not confirmed:
-            user_input = input(f"Enter Desired {info_type.capitalize()}: ")
-            confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
-
-            while confirm_input not in ["y", "n"]:
-                print("Please choose a valid option.")
-                confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
-
-            if confirm_input == "y":
-                confirmed = True
-                return user_input
