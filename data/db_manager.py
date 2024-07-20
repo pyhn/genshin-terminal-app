@@ -82,6 +82,8 @@ class DatabaseManager:
             body TEXT NOT NULL,
             uid INTEGER,
             post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            likes INTEGER DEFAULT 0,
+            dislikes INTEGER DEFAULT 0,
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
             );
                 '''
@@ -134,7 +136,15 @@ class DatabaseManager:
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (3, 4))
         
         self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Lorem Ippsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vehicula varius tincidunt. Integer dui nibh, iaculis quis diam et, aliquam eleifend justo. Aenean nec est sed ex malesuada imperdiet sed a erat. Sed at maximus urna, fermentum pretium orci. Donec facilisis dignissim libero, vitae sagittis sapien porta quis. Maecenas quis nisi sit amet justo sagittis laoreet viverra id nisi. Etiam vehicula tempus cursus. Aenean dignissim augue at augue scelerisque consectetur. Fusce tempus, est ac ornare consequat, purus ante pellentesque mauris, sit amet euismod metus est non ex. Pellentesque quis purus dapibus, tempus enim ac, facilisis dolor.", 1))
-        
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Poggeres", "Guys chat are we pogging like crazy or nah, coz lowkey im pogging like crazy and its just wayyyyyyyyyy tooo pog rn hahaahah.", 1))
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Hehehe", "Muuheheheuehuuhueuheuhuhuehuehu Muheuheuheuhuehuheuheh eheheheheh heu uehuehuh uheu heuh euhuehhehu uehmeueehhee..", 1))
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Crimp", "Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering", 2))
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Slab", "Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering SlabBouldering bouldering bouldering Slab Bouldering bouldering bouldering", 2))                                                                              
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Dropknee", "When one foot inside edges while the other outside edges, the knee of the outside edging leg is lowered so that the feet are pushing away from each other rather than down", 2))
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Gaston", "Gripping a vertical hold with the arm bent at the elbow and the hand, thumb down, pulling the hold away from the body.", 3))
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Bicycle", "A technique in which one foot pushes a hold conventionally while the other foot toe hooks the same, or a nearby, hold. Most commonly used when climbing roofs ", 3))
+        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Bouldering Pad", "A rectangular crash mat that consists of multiple layers of foam covered in a heavy duty material. The pad is placed where the climber is expected to fall to cushion their landing", 3))
+
         self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "HALLLLLLOOOOOOOOO :D HALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :D"))
 
         insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
