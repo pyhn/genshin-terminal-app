@@ -22,7 +22,11 @@ class FriendPostDetails:
             print("+---------------------------------+")
             print("| 2. Comment to Post              |")
             print("+---------------------------------+")
-            print("| 3. Return to Friends Activity   |")
+            print("| 3. Like Post                    |")
+            print("+---------------------------------+")
+            print("| 4. Dislike Post                 |")
+            print("+---------------------------------+")
+            print("| 5. Return to Friends Activity   |")
             print("+---------------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
@@ -39,6 +43,10 @@ class FriendPostDetails:
             if choice == "2":
                 self.commenting()
             if choice == "3":
+                pass
+            if choice == "4":
+                pass
+            if choice == "5":
                 print("Returning to Friends Activity...")
                 self.viewing = False
             

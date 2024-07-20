@@ -1,1 +1,2 @@
-- fix bug that occurs after logging in then logging out
+- likes/dislikes (create new tables for each)
+- ^ consider what happens when a user already likes/dislikes a post (only allow one or other)
