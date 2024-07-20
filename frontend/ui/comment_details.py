@@ -1,3 +1,5 @@
+from backend.utils import Utils
+
 class CommentDetails:
     def __init__(self, user_controller, comment_info) -> None:
         self.user_controller = user_controller
@@ -10,7 +12,7 @@ class CommentDetails:
         comment_date = self.comment_info[4][:10]
         comment_content = self.comment_info[5]
         print(f"Date: {comment_date}")
-        print(f"Content: {self.format_content(comment_content)}")
+        print(f"Content: {Utils.format_content(comment_content)}")
         print(f"Like Count: {self.comment_info[6]}")
         print(f"Dislike Count: {self.comment_info[7]}")
         while self.decision == False or self.viewing == True:
@@ -42,29 +44,4 @@ class CommentDetails:
 
     def get_viewing(self):
         return self.viewing
-    
-    def format_content(self, text):
-        formated_text = ""
-        if text != None:
-            lines = []
-            max_width = 50
-            remaining_text = text
-            while len(remaining_text) > max_width:
-                # Find the index of the last space within the max_width
-                last_space_index = remaining_text.rfind(' ', 0, max_width)
-                if last_space_index == -1:
-                    # No space found within max_width, break the word
-                    lines.append(remaining_text[:max_width])
-                    remaining_text = remaining_text[max_width:]
-                else:
-                    # Split the text at the last space within max_width
-                    lines.append(remaining_text[:last_space_index])
-                    remaining_text = remaining_text[last_space_index + 1:]
-            lines.append(remaining_text)  # Add the remaining text as the last line
-
-            for line in lines:
-                formated_text += line + "\n"
-            return formated_text
-        else:
-            return None
         

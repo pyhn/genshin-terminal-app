@@ -1,5 +1,6 @@
 from .edit_user_profile import EditUserProfile
 from .user_preferences import UserPreferences
+from backend.utils import Utils
 
 class UserProfile:
     def __init__(self, user_controller, user) -> None:
@@ -13,7 +14,7 @@ class UserProfile:
         print()
         print(f"[Welcome {self.user.get_username()}.]")
         print(f"Current Status: {self.user.get_status()}")
-        print(f"Bio: {self.format_bio()}")
+        print(f"Bio: {Utils.format_content(self.user.get_bio())}")
         print(f"Favourite Character: {self.user.get_fav_character()}")
         print(f"Favourite Region: {self.user.get_fav_region()}\n")
 
@@ -29,32 +30,6 @@ class UserProfile:
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
             
-    def format_bio(self):
-        text = self.user.get_bio()
-        formated_text = ""
-        if text != None:
-            lines = []
-            max_width = 50
-            remaining_text = text
-            while len(remaining_text) > max_width:
-                # Find the index of the last space within the max_width
-                last_space_index = remaining_text.rfind(' ', 0, max_width)
-                if last_space_index == -1:
-                    # No space found within max_width, break the word
-                    lines.append(remaining_text[:max_width])
-                    remaining_text = remaining_text[max_width:]
-                else:
-                    # Split the text at the last space within max_width
-                    lines.append(remaining_text[:last_space_index])
-                    remaining_text = remaining_text[last_space_index + 1:]
-            lines.append(remaining_text)  # Add the remaining text as the last line
-
-            for line in lines:
-                formated_text += line + "\n"
-            return formated_text
-        else:
-            return None
-
     def handle_menu_input(self, choice):
         options = ["1","2","3"]
         if choice not in options:
