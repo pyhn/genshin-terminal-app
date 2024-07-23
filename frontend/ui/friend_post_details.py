@@ -40,7 +40,7 @@ class FriendPostDetails:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
             if choice == "1":
-                post_comments = PostComments(self.user_controller, self.post_info[0])
+                post_comments = PostComments(self.user_controller, self.user, self.post_info[0])
                 post_comments.display()
             if choice == "2":
                 self.commenting()

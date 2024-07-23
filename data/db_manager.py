@@ -106,6 +106,39 @@ class DatabaseManager:
         );
         '''
         self.execute_update(query)
+
+    def create_likes_table(self):
+        query = '''
+            CREATE TABLE IF NOT EXISTS likes (
+            lid INTEGER PRIMARY KEY AUTOINCREMENT,
+            uid INTEGER,
+            pid INTEGER DEFAULT NULL,
+            cid INTEGER DEFAULT NULL,
+            like_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+            FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
+            FOREIGN KEY (cid) REFERENCES comments(cid) ON DELETE CASCADE,
+            CHECK ((pid IS NOT NULL AND cid IS NULL) OR (pid IS NULL AND cid IS NOT NULL))
+        );
+        '''
+        self.execute_update(query)
+
+    def create_dislikes_table(self):
+        query = '''
+            CREATE TABLE IF NOT EXISTS dislikes (
+            did INTEGER PRIMARY KEY AUTOINCREMENT,
+            uid INTEGER,
+            pid INTEGER DEFAULT NULL,
+            cid INTEGER DEFAULT NULL,
+            dislike_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+            FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
+            FOREIGN KEY (cid) REFERENCES comments(cid) ON DELETE CASCADE,
+            CHECK ((pid IS NOT NULL AND cid IS NULL) OR (pid IS NULL AND cid IS NOT NULL))
+        );
+        '''
+        self.execute_update(query)
+    
     def drop_table(self, table):
         query = f"DROP TABLE IF EXISTS {table}"
         self.execute_update(query)
@@ -157,81 +190,95 @@ class DatabaseManager:
 
 
     def create_new_user(self, username, password, email, status=None, bio=None, fav_character=None, fav_region=None):
-        # Get the maximum user ID currently in the table
-        self.cursor.execute("SELECT MAX(uid) FROM users")
-        max_uid = self.cursor.fetchone()[0]
-        
-        # Calculate the new user ID by adding 1 to the maximum UID
-        new_uid = max_uid + 1 if max_uid is not None else 1
-        
-        # Insert the new user into the users table
-        self.cursor.execute("""
-            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (new_uid, username, password, email, status, bio, fav_character, fav_region))
-        
-        # Commit the transaction to make the changes persistent
-        self.connection.commit()
-        return new_uid
+        try:
+            # Get the maximum user ID currently in the table
+            self.cursor.execute("SELECT MAX(uid) FROM users")
+            max_uid = self.cursor.fetchone()[0]
+
+            # Calculate the new user ID by adding 1 to the maximum UID
+            new_uid = max_uid + 1 if max_uid is not None else 1
+
+            # Insert the new user into the users table
+            self.cursor.execute("""
+                INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (new_uid, username, password, email, status, bio, fav_character, fav_region))
+
+            # Commit the transaction to make the changes persistent
+            self.connection.commit()
+            return new_uid
+        except Exception as e:
+            print(f"Error creating new user: {e}")
 
     def get_user_pass_by_id(self, user_id):
-        user_query = "SELECT username, password FROM users WHERE uid = ?"
-        result = self.execute_query(user_query, (user_id,))
+        try:
+            user_query = "SELECT username, password FROM users WHERE uid = ?"
+            result = self.execute_query(user_query, (user_id,))
 
-        # Check if the result contains any rows
-        if result:
-            # Extract the username and password from the first tuple in the result
-            username = result[0][0]
-            password = result[0][1]
-            
-            # Use the username and password as needed
-            return username, password
-        else:
-            return None
-        
+            # Check if the result contains any rows
+            if result:
+                # Extract the username and password from the first tuple in the result
+                username = result[0][0]
+                password = result[0][1]
+
+                # Use the username and password as needed
+                return username, password
+            else:
+                return None
+        except Exception as e:
+            print(f"Error retrieving user password: {e}")
+
     def get_user_info_by_id(self, user_id):
-        user_query = "SELECT * FROM users WHERE uid = ?"
-        result = self.execute_query(user_query, (user_id,))
+        try:
+            user_query = "SELECT * FROM users WHERE uid = ?"
+            result = self.execute_query(user_query, (user_id,))
 
-        # Check if the result contains any rows
-        if result:
-            user_info = result[0]
-            
-            return user_info
-        else:
-            return None
-        
+            # Check if the result contains any rows
+            if result:
+                user_info = result[0]
+                return user_info
+            else:
+                return None
+        except Exception as e:
+            print(f"Error retrieving user info: {e}")
+
     def update_user_info(self, user):
-        user_id = user.get_uid()
-        new_status = user.get_status()
-        new_bio = user.get_bio()
-        new_fav_char = user.get_fav_character()
-        new_fav_region = user.get_fav_region()
+        try:
+            user_id = user.get_uid()
+            new_status = user.get_status()
+            new_bio = user.get_bio()
+            new_fav_char = user.get_fav_character()
+            new_fav_region = user.get_fav_region()
 
-        query = """
-        UPDATE users 
-        SET bio = ?, 
-            status = ?, 
-            fav_character = ?, 
-            fav_region = ?
-        WHERE uid = ?;
-        """
-        self.execute_update(query, (new_bio, new_status, new_fav_char, new_fav_region, user_id))
-        
+            query = """
+            UPDATE users 
+            SET bio = ?, 
+                status = ?, 
+                fav_character = ?, 
+                fav_region = ?
+            WHERE uid = ?;
+            """
+            self.execute_update(query, (new_bio, new_status, new_fav_char, new_fav_region, user_id))
+        except Exception as e:
+            print(f"Error updating user info: {e}")
+
     def update_user_pref(self, user):
-        user_id = user.get_uid()
-        new_username = user.get_username()
-        new_password = user.get_password()
-        new_email = user.get_email()
+        try:
+            user_id = user.get_uid()
+            new_username = user.get_username()
+            new_password = user.get_password()
+            new_email = user.get_email()
 
-        query = """
-        UPDATE users 
-        SET username = ?, 
-            password = ?, 
-            email = ?
-        WHERE uid = ?;
-        """
-        self.execute_update(query, (new_username, new_password, new_email, user_id))
+            query = """
+            UPDATE users 
+            SET username = ?, 
+                password = ?, 
+                email = ?
+            WHERE uid = ?;
+            """
+            self.execute_update(query, (new_username, new_password, new_email, user_id))
+        except Exception as e:
+            print(f"Error updating user preferences: {e}")
 
     def send_friend_request(self, requester, requestee):
         try:
@@ -242,125 +289,235 @@ class DatabaseManager:
             print("Friend Request Sent. Returning to Friends Menu...")
         except sqlite3.IntegrityError as e:
             print(f"Failed to send friend request. Returning to Friends Menu.")
+        except Exception as e:
+            print(f"Error sending friend request: {e}")
 
     def check_friend_requests(self, user):
-        uid = user.get_uid()
-        query = """
-        SELECT fr.*, u.username
-        FROM friend_requests fr
-        JOIN users u ON fr.requester_id = u.uid
-        WHERE fr.requestee_id = ? AND fr.status = 'pending';
-        """
-        results = self.execute_query(query, (uid,))
+        try:
+            uid = user.get_uid()
+            query = """
+            SELECT fr.*, u.username
+            FROM friend_requests fr
+            JOIN users u ON fr.requester_id = u.uid
+            WHERE fr.requestee_id = ? AND fr.status = 'pending';
+            """
+            results = self.execute_query(query, (uid,))
 
-        if results:
-            return results
-        else:
-            return None
-        
+            if results:
+                return results
+            else:
+                return None
+        except Exception as e:
+            print(f"Error checking friend requests: {e}")
+
     def accept_friend_request(self, requester, requestee):
-        update_query = """
-        UPDATE friend_requests
-        SET status = 'accepted'
-        WHERE requester_id = ? AND requestee_id = ?;
-        """
+        try:
+            update_query = """
+            UPDATE friend_requests
+            SET status = 'accepted'
+            WHERE requester_id = ? AND requestee_id = ?;
+            """
+            self.execute_update(update_query, (requester, requestee))
 
-        self.execute_update(update_query, (requester, requestee))
+            insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
+            self.execute_update(insert_query, (requester, requestee))
+            self.execute_update(insert_query, (requestee, requester))
+        except Exception as e:
+            print(f"Error accepting friend request: {e}")
 
-        insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
-        self.execute_update(insert_query, (requester, requestee))
-        self.execute_update(insert_query, (requestee, requester))
-    
     def reject_friend_request(self, requester, requestee):
-        update_query = """
-        UPDATE friend_requests
-        SET status = 'rejected'
-        WHERE requester_id = ? AND requestee_id = ?;
-        """
-        self.execute_update(update_query, (requester, requestee))
+        try:
+            update_query = """
+            UPDATE friend_requests
+            SET status = 'rejected'
+            WHERE requester_id = ? AND requestee_id = ?;
+            """
+            self.execute_update(update_query, (requester, requestee))
+        except Exception as e:
+            print(f"Error rejecting friend request: {e}")
 
     def retrieve_friends_list(self, user):
-        uid = user.get_uid()
-        query = """
-        SELECT u.*
-        FROM users u
-        JOIN friends f ON u.uid = f.friend_id
-        WHERE f.uid = ?;
-        """
+        try:
+            uid = user.get_uid()
+            query = """
+            SELECT u.*
+            FROM users u
+            JOIN friends f ON u.uid = f.friend_id
+            WHERE f.uid = ?;
+            """
 
-        results = self.execute_query(query, (uid,))
-        if results:
-            return results
-        else:
-            return []
-        
+            results = self.execute_query(query, (uid,))
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving friends list: {e}")
+
     def retrieve_friends_list_only_id(self, user):
-        uid = user.get_uid()
-        query = """
-        SELECT u.uid
-        FROM users u
-        JOIN friends f ON u.uid = f.friend_id
-        WHERE f.uid = ?;
-        """
+        try:
+            uid = user.get_uid()
+            query = """
+            SELECT u.uid
+            FROM users u
+            JOIN friends f ON u.uid = f.friend_id
+            WHERE f.uid = ?;
+            """
 
-        results = self.execute_query(query, (uid,))
-        if results:
-            return results
-        else:
-            return []
-        
+            results = self.execute_query(query, (uid,))
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving friends list (only ID): {e}")
+
     def create_post(self, user, title, content):
-        uid = user.get_uid()
-        query = '''
-        INSERT INTO posts (title, body, uid) VALUES (?, ?, ?);
-        '''
-        self.execute_update(query, (title, content, uid))
+        try:
+            uid = user.get_uid()
+            query = '''
+            INSERT INTO posts (title, body, uid) VALUES (?, ?, ?);
+            '''
+            self.execute_update(query, (title, content, uid))
+        except Exception as e:
+            print(f"Error creating post: {e}")
 
     def retrieve_posts_list(self, user):
-        uid = user.get_uid()
-        query = """
-        SELECT p.*
-        FROM posts p
-        WHERE p.uid = ?;
-        """
+        try:
+            uid = user.get_uid()
+            query = """
+            SELECT p.*
+            FROM posts p
+            WHERE p.uid = ?;
+            """
 
-        results = self.execute_query(query, (uid,))
-        if results:
-            return results
-        else:
-            return []
-        
+            results = self.execute_query(query, (uid,))
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving posts list: {e}")
+
     def delete_post(self, pid):
-        delete_query = "DELETE FROM posts WHERE pid = ?;"
-        self.execute_update(delete_query, (pid,))
+        try:
+            delete_query = "DELETE FROM posts WHERE pid = ?;"
+            self.execute_update(delete_query, (pid,))
+        except Exception as e:
+            print(f"Error deleting post: {e}")
 
     def retrieve_friends_posts(self, user):
-        uid = user.get_uid()
-        query = """
-        SELECT p.*
-        FROM posts p
-        JOIN friends f ON p.uid = f.friend_id
-        WHERE f.uid = ?;
-        """
-        results = self.execute_query(query, (uid,))
-        if results:
-            return results
-        else:
-            return []
-        
+        try:
+            uid = user.get_uid()
+            query = """
+            SELECT p.*
+            FROM posts p
+            JOIN friends f ON p.uid = f.friend_id
+            WHERE f.uid = ?;
+            """
+            results = self.execute_query(query, (uid,))
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving friends' posts: {e}")
+
     def comment_to_post(self, uid, pid, content):
-        query = '''
-        INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?);
-        '''
-        self.execute_update(query, (uid, pid, content))
+        try:
+            query = '''
+            INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?);
+            '''
+            self.execute_update(query, (uid, pid, content))
+        except Exception as e:
+            print(f"Error commenting on post: {e}")
 
     def retrieve_comments(self, pid):
-        query = """
-        SELECT * 
-        FROM comments 
-        WHERE pid = ?;"""
-        results = self.execute_query(query, (pid,))
-        if results:
-            return results
-        else:
-            return []
+        try:
+            query = """
+            SELECT * 
+            FROM comments 
+            WHERE pid = ?;
+            """
+            results = self.execute_query(query, (pid,))
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving comments: {e}")
+
+    def like_comment(self, uid, cid):
+        try:
+            query = "INSERT INTO likes (uid, cid) VALUES (?, ?);"
+            self.execute_update(query, (uid, cid))
+
+            query = """UPDATE comments
+                    SET likes = likes + 1
+                    WHERE cid = ?;
+                    """
+            self.execute_update(query, (cid,))
+        except Exception as e:
+            print(f"Error liking comment: {e}")
+
+    def dislike_comment(self, uid, cid):
+        try:
+            query = "INSERT INTO dislikes (uid, cid) VALUES (?, ?);"
+            self.execute_update(query, (uid, cid))
+
+            query = """UPDATE comments
+                    SET dislikes = dislikes + 1
+                    WHERE cid = ?;
+                    """
+            self.execute_update(query, (cid,))
+        except Exception as e:
+            print(f"Error disliking comment: {e}")
+
+    def like_post(self, uid, pid):
+        try:
+            query = "INSERT INTO likes (uid, pid) VALUES (?, ?);"
+            self.execute_update(query, (uid, pid))
+
+            query = """UPDATE posts
+                    SET likes = likes + 1
+                    WHERE pid = ?;
+                    """
+            self.execute_update(query, (pid,))
+        except Exception as e:
+            print(f"Error liking post: {e}")
+
+    def dislike_post(self, uid, pid):
+        try:
+            query = "INSERT INTO dislikes (uid, pid) VALUES (?, ?);"
+            self.execute_update(query, (uid, pid))
+
+            query = """UPDATE posts
+                    SET dislikes = dislikes + 1
+                    WHERE pid = ?;
+                    """
+            self.execute_update(query, (pid,))
+        except Exception as e:
+            print(f"Error disliking post: {e}")
+
+    def get_total_received_likes(self):
+        query = '''
+        SELECT 
+            u.uid, 
+            u.username, 
+            COALESCE(SUM(pl.like_count), 0) + COALESCE(SUM(cl.like_count), 0) AS total_likes
+        FROM 
+            users u
+        LEFT JOIN 
+            (SELECT p.uid, COUNT(l.lid) AS like_count 
+            FROM posts p 
+            LEFT JOIN likes l ON p.pid = l.pid 
+            GROUP BY p.uid) pl ON u.uid = pl.uid
+        LEFT JOIN 
+            (SELECT c.uid, COUNT(l.lid) AS like_count 
+            FROM comments c 
+            LEFT JOIN likes l ON c.cid = l.cid 
+            GROUP BY c.uid) cl ON u.uid = cl.uid
+        GROUP BY 
+            u.uid, u.username;
+        '''
+        self.execute_query(query)

@@ -1,10 +1,11 @@
 from backend.utils import Utils
 
 class CommentDetails:
-    def __init__(self, user_controller, comment_info) -> None:
+    def __init__(self, user_controller, user, comment_info) -> None:
         self.user_controller = user_controller
         self.decision = False
         self.viewing = True
+        self.user = user
         self.comment_info = comment_info
         
     def display(self):
@@ -33,7 +34,9 @@ class CommentDetails:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
             if choice == "1":
-                pass
+                uid = self.user.get_uid()
+                cid = self.comment_info[0]
+                self.user_controller.like_comment(uid, cid)
             if choice == "2":
                 pass
             if choice == "3":

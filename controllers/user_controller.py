@@ -75,5 +75,8 @@ class UserController:
     def retrieve_comments(self, pid):
         result = self.db_manager.retrieve_comments(pid)
         return result
+    
+    def like_comment(self, cid, uid):
+        self.db_manager.like_comment(cid, uid)
 
 
