@@ -1,4 +1,5 @@
 from .comment_details import CommentDetails
+from backend.utils import Utils
 
 class PostComments:
     def __init__(self, user_controller, pid) -> None:
@@ -27,14 +28,9 @@ class PostComments:
             for i, comment in enumerate(self.comments_list):
                 author_info = self.user_controller.get_user_info_by_id(comment[1])
                 author_name = author_info[1]
-                print(f"{i + 1}. [Author]: {author_name} [Content]: {self.truncate_string(comment[5])}")
+                print(f"{i + 1}. [Author]: {author_name} [Content]: {Utils.truncate_string(comment[5])}")
             choice = input("Enter Choice [or Enter to Return to Post Menu]: ")
             self.handle_menu_input(choice)
-
-    def truncate_string(self, string):
-        if len(string) > 15:
-            return string[:15] + "..."
-        return string
 
     def handle_menu_input(self, choice):
         if choice.strip() == "":

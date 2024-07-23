@@ -1,5 +1,5 @@
 from .friend_post_details import FriendPostDetails
-
+from backend.utils import Utils
 class FriendsActivity:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -27,14 +27,9 @@ class FriendsActivity:
             for i, post in enumerate(self.friends_posts):
                 friend_info = self.user_controller.get_user_info_by_id(post[3])
                 friend_name = friend_info[1]
-                print(f"{i + 1}. [Friend]: {friend_name} [Title]: {post[1]} [Content]: {self.truncate_string(post[2])}")
+                print(f"{i + 1}. [Friend]: {friend_name} [Title]: {post[1]} [Content]: {Utils.truncate_string(post[2])}")
             choice = input("Enter Choice [or Enter to Return to Friends Menu]: ")
             self.handle_menu_input(choice)
-
-    def truncate_string(self, string):
-        if len(string) > 15:
-            return string[:15] + "..."
-        return string
 
     def handle_menu_input(self, choice):
         if choice.strip() == "":

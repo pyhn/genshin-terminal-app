@@ -1,4 +1,5 @@
 from .post_details import PostDetails
+from backend.utils import Utils
 
 class PostsList:
     def __init__(self, user_controller, user) -> None:
@@ -25,14 +26,9 @@ class PostsList:
                 break
             
             for i,post in enumerate(self.posts_list):
-                print(f"{i + 1}. [Title]: {post[1]} [Content]: {self.truncate_string(post[2])}")
+                print(f"{i + 1}. [Title]: {post[1]} [Content]: {Utils.truncate_string(post[2])}")
             choice = input("Enter Choice [or Enter to Return to Posts Menu]: ")
             self.handle_menu_input(choice)
-
-    def truncate_string(self, string):
-        if len(string) > 15:
-            return string[:15] + "..."
-        return string
 
     def handle_menu_input(self, choice):
         if choice.strip() == "":
