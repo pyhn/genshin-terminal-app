@@ -15,10 +15,11 @@ class FriendPostDetails:
         post_title = self.post_info[1]
         post_content = self.post_info[2]
         post_date = self.post_info[4][:10]
-        print(f"Title: {post_title} ")
-        print(f"Post Date: {post_date}")
-        print(f"Content: {Utils.format_content(post_content)}")
+        
         while self.decision == False or self.viewing == True:
+            print(f"Title: {post_title} ")
+            print(f"Post Date: {post_date}")
+            print(f"Content: {Utils.format_content(post_content)}")
             print("+---------------------------------+")
             print("| 1. View Comments                |")
             print("+---------------------------------+")
@@ -39,15 +40,24 @@ class FriendPostDetails:
         if choice not in options:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
+            uid = self.user.get_uid()
+            pid = self.post_info[0]
             if choice == "1":
                 post_comments = PostComments(self.user_controller, self.user, self.post_info[0])
                 post_comments.display()
             if choice == "2":
                 self.commenting()
             if choice == "3":
-                pass
+                if str(self.post_info[3]) == uid:
+                    print("You cannot like your own post! Returning to details...")
+                else:
+                    self.handle_like(uid, pid)
             if choice == "4":
-                pass
+                if str(self.post_info[3]) == uid:
+                    print("You cannot dislike your own post! Returning to details...")
+                else:
+                    self.handle_dislike(uid, pid)
+            
             if choice == "5":
                 print("Returning to Friends Activity...")
                 self.viewing = False
@@ -63,3 +73,19 @@ class FriendPostDetails:
         pid = self.post_info[0]
         self.user_controller.comment_to_post(uid, pid, content)
         print("Returning to Post...")
+
+    def handle_like(self, uid, cid):
+        if self.user_controller.has_user_liked_post(uid, cid):
+            print("You have already liked this post! Returning to details...")
+        else:
+            if self.user_controller.has_user_disliked_post(uid, cid):
+                self.user_controller.remove_dislike_from_post(uid, cid)
+            self.user_controller.like_post(uid, cid)
+        
+    def handle_dislike(self, uid, cid):
+        if self.user_controller.has_user_disliked_post(uid, cid):
+            print("You have already disliked this post! Returning to details...")
+        else:
+            if self.user_controller.has_user_liked_post(uid, cid):
+                self.user_controller.remove_like_from_post(uid, cid)
+            self.user_controller.dislike_post(uid, cid)

@@ -37,12 +37,12 @@ class CommentDetails:
             cid = self.comment_info[0]
             if choice == "1":
                 if str(self.comment_info[1]) == uid:
-                    print("You cannot like your own post! Returning to details...")
+                    print("You cannot like your own comment! Returning to details...")
                 else:
                     self.handle_like(uid, cid)
             if choice == "2":
                 if str(self.comment_info[1]) == uid:
-                    print("You cannot dislike your own post! Returning to details...")
+                    print("You cannot dislike your own comment! Returning to details...")
                 else:
                     self.handle_dislike(uid, cid)
 
