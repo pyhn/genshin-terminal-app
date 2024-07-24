@@ -239,11 +239,11 @@ class DatabaseManager:
             SET dislikes = (
                 SELECT COUNT(*)
                 FROM dislikes
-                WHERE dislikes.pid = posts.pid
+                WHERE dislikes.cid = comments.cid
             );
             """
             self.execute_update(update_dislikes_query)
-
+            print("Comment likes and dislikes updated successfully!")
         except Exception as e:
             print(f"Error updating comment likes: {e}")
 
