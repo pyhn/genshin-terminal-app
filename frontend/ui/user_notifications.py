@@ -53,6 +53,9 @@ class UserNotifications:
             self.user_controller.accept_friend_request(requester_id, requestee_id)
             del self.requests[index]
             print("Friend Request Accepted!")
+            self.user_controller.increase_fame(requester_id)
+            self.user_controller.increase_fame(requestee_id)
+            
         if confirm_input == "n":
             self.user_controller.reject_friend_request(requester_id, requestee_id)
             del self.requests[index]

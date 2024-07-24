@@ -21,7 +21,7 @@ class FriendsActivity:
             print("+-----------------------------------+")
 
             if friends_post_count == 0:
-                input("You're Friends Have 0 Posts. Press Enter to Return to Friends Menu.")
+                input("Your Friends Have 0 Posts. Press Enter to Return to Friends Menu.")
                 break
             
             for i, post in enumerate(self.friends_posts):

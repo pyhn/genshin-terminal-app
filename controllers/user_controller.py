@@ -27,6 +27,9 @@ class UserController:
     def send_friend_request(self, requester, requestee):
         self.db_manager.send_friend_request(requester, requestee)
 
+    def remove_friend(self, uid_1, uid_2):
+        self.db_manager.remove_friend(uid_1, uid_2)
+
     def check_friend_requests(self, user):
         results = self.db_manager.check_friend_requests(user)
         requests = []

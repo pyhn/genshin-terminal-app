@@ -1,4 +1,5 @@
 from backend.utils import Utils
+from .friend_details import FriendDetails
 
 class FriendsList:
     def __init__(self, user_controller, user) -> None:
@@ -47,12 +48,7 @@ class FriendsList:
     def handle_friend_choice(self, choice):
         index = choice - 1
         friend_info = self.friends_list[index]
-        friend_name = friend_info[1]
-        friend_bio = friend_info[5]
-        friend_fav_char = friend_info[6]
-        friend_fav_region = friend_info[7]
-        print(f"User: {friend_name}")
-        print(f"Bio: {Utils.format_content(friend_bio)}")
-        print(f"Favourite Character: {friend_fav_char}")
-        print(f"Favourite Region: {friend_fav_region}")
+        friends_details = FriendDetails(self.user_controller, self.user, friend_info)
+        friends_details.display()
+        
 
