@@ -37,16 +37,17 @@ class CommentDetails:
         else:
             uid = self.user.get_uid()
             cid = self.comment_info[0]
+            author_id = self.comment_info[1]
             if choice == "1":
                 if str(self.comment_info[1]) == uid:
                     print("You cannot like your own comment! Returning to details...")
                 else:
-                    self.handle_like(uid, cid)
+                    self.handle_like(uid, cid, author_id)
             if choice == "2":
                 if str(self.comment_info[1]) == uid:
                     print("You cannot dislike your own comment! Returning to details...")
                 else:
-                    self.handle_dislike(uid, cid)
+                    self.handle_dislike(uid, cid, author_id)
 
             if choice == "3":
                 content = Utils.acquire_string_input("Desired","Comment Content")
@@ -66,20 +67,22 @@ class CommentDetails:
     def get_viewing(self):
         return self.viewing
     
-    def handle_like(self, uid, cid):
+    def handle_like(self, uid, cid, author_id):
         if self.user_controller.has_user_liked_comment(uid, cid):
             print("You have already liked this comment! Returning to details...")
         else:
             if self.user_controller.has_user_disliked_comment(uid, cid):
                 self.user_controller.remove_dislike_from_comment(uid, cid)
             self.user_controller.like_comment(uid, cid)
+            self.user_controller.increase_fame(author_id)
         
-    def handle_dislike(self, uid, cid):
+    def handle_dislike(self, uid, cid, author_id):
         if self.user_controller.has_user_disliked_comment(uid, cid):
             print("You have already disliked this comment! Returning to details...")
         else:
             if self.user_controller.has_user_liked_comment(uid, cid):
                 self.user_controller.remove_like_from_comment(uid, cid)
             self.user_controller.dislike_comment(uid, cid)
+            self.user_controller.decrease_fame(author_id)
     
         

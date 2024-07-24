@@ -41,7 +41,8 @@ class DatabaseManager:
             status TEXT,
             bio TEXT,
             fav_character TEXT,
-            fav_region TEXT
+            fav_region TEXT,
+            fame INTEGER DEFAULT 0
         );
         """
         self.execute_update(create_table_query)
@@ -69,9 +70,10 @@ class DatabaseManager:
             start_date DATE DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (uid, friend_id),
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
-            FOREIGN KEY (friend_id) REFERENCES users(uid) ON DELETE CASCADE
+            FOREIGN KEY (friend_id) REFERENCES users(uid) ON DELETE CASCADE,
+            CHECK (uid != friend_id)
         );
-    """
+        """
         self.execute_update(query)
 
     def create_posts_table(self):
@@ -85,13 +87,13 @@ class DatabaseManager:
             likes INTEGER DEFAULT 0,
             dislikes INTEGER DEFAULT 0,
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
-            );
-                """
+        );
+        """
         self.execute_update(query)
 
     def create_comments_table(self):
         query = """
-            CREATE TABLE IF NOT EXISTS comments (
+        CREATE TABLE IF NOT EXISTS comments (
             cid INTEGER PRIMARY KEY AUTOINCREMENT,
             uid INTEGER,
             replyto INTEGER DEFAULT NULL,
@@ -102,14 +104,14 @@ class DatabaseManager:
             dislikes INTEGER DEFAULT 0,
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
             FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
-            FOREIGN KEY (replyto) REFERENCES users(uid) ON DELETE CASCADE
+            FOREIGN KEY (replyto) REFERENCES comments(cid) ON DELETE CASCADE
         );
         """
         self.execute_update(query)
 
     def create_likes_table(self):
         query = """
-            CREATE TABLE IF NOT EXISTS likes (
+        CREATE TABLE IF NOT EXISTS likes (
             lid INTEGER PRIMARY KEY AUTOINCREMENT,
             uid INTEGER,
             pid INTEGER DEFAULT NULL,
@@ -125,7 +127,7 @@ class DatabaseManager:
 
     def create_dislikes_table(self):
         query = """
-            CREATE TABLE IF NOT EXISTS dislikes (
+        CREATE TABLE IF NOT EXISTS dislikes (
             did INTEGER PRIMARY KEY AUTOINCREMENT,
             uid INTEGER,
             pid INTEGER DEFAULT NULL,
@@ -138,6 +140,7 @@ class DatabaseManager:
         );
         """
         self.execute_update(query)
+
     
     def drop_table(self, table):
         query = f"DROP TABLE IF EXISTS {table}"
@@ -162,7 +165,22 @@ class DatabaseManager:
         self.cursor.execute("""
             INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (4, "eli", "pog", "poggier", None, None, None, None))
+        """, (4, "eli", "pog", "poggied", None, None, None, None))
+
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (5, "joe", "pog", "poggiest", None, None, None, None))
+
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (6, "bob", "pog", "poggerest", None, None, None, None))
+
+        self.cursor.execute("""
+            INSERT INTO users (uid, username, password, email, status, bio, fav_character, fav_region)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (7, "guy", "pog", "poggier", None, None, None, None))
 
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (1, 4))
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (2, 4))
@@ -198,7 +216,174 @@ class DatabaseManager:
         self.execute_update(insert_query, (2, 1))
         self.execute_update(insert_query, (1, 2))
         
+        self.update_post_interactions()
+        self.update_comment_interactions()
+        self.update_user_fame()
+
         self.connection.commit()
+
+    def update_comment_interactions(self):
+        try:
+            update_query = """
+            UPDATE comments
+            SET likes = (
+                SELECT COUNT(*)
+                FROM likes
+                WHERE likes.cid = comments.cid
+            );
+            """
+            self.execute_update(update_query)
+
+            update_dislikes_query = """
+            UPDATE comments
+            SET dislikes = (
+                SELECT COUNT(*)
+                FROM dislikes
+                WHERE dislikes.pid = posts.pid
+            );
+            """
+            self.execute_update(update_dislikes_query)
+
+        except Exception as e:
+            print(f"Error updating comment likes: {e}")
+
+    def update_post_interactions(self):
+        try:
+            # Update likes count in the posts table based on the likes table
+            update_likes_query = """
+            UPDATE posts
+            SET likes = (
+                SELECT COUNT(*)
+                FROM likes
+                WHERE likes.pid = posts.pid
+            );
+            """
+            self.execute_update(update_likes_query)
+            
+            # Update dislikes count in the posts table based on the dislikes table
+            update_dislikes_query = """
+            UPDATE posts
+            SET dislikes = (
+                SELECT COUNT(*)
+                FROM dislikes
+                WHERE dislikes.pid = posts.pid
+            );
+            """
+            self.execute_update(update_dislikes_query)
+
+            
+            print("Post likes and dislikes updated successfully!")
+        except Exception as e:
+            print(f"Error updating post likes and dislikes: {e}")
+
+    def update_user_fame(self):
+        try:
+            # Update fame based on the number of friends
+            update_fame_friends_query = """
+            UPDATE users
+            SET fame = (
+                SELECT COUNT(*)
+                FROM friends
+                WHERE friends.uid = users.uid
+            )
+            WHERE uid IN (
+                SELECT uid
+                FROM friends
+                GROUP BY uid
+            );
+            """
+            self.execute_update(update_fame_friends_query)
+
+            # Update fame based on likes on posts
+            update_fame_likes_posts_query = """
+            UPDATE users
+            SET fame = fame + (
+                SELECT COALESCE(SUM(like_count), 0)
+                FROM (
+                    SELECT pid, COUNT(*) AS like_count
+                    FROM likes
+                    GROUP BY pid
+                ) AS post_likes
+                JOIN posts ON posts.pid = post_likes.pid
+                WHERE posts.uid = users.uid
+            )
+            WHERE uid IN (
+                SELECT uid
+                FROM posts
+                GROUP BY uid
+            );
+            """
+            self.execute_update(update_fame_likes_posts_query)
+
+            # Update fame based on likes on comments
+            update_fame_likes_comments_query = """
+            UPDATE users
+            SET fame = fame + (
+                SELECT COALESCE(SUM(like_count), 0)
+                FROM (
+                    SELECT cid, COUNT(*) AS like_count
+                    FROM likes
+                    GROUP BY cid
+                ) AS comment_likes
+                JOIN comments ON comments.cid = comment_likes.cid
+                WHERE comments.uid = users.uid
+            )
+            WHERE uid IN (
+                SELECT uid
+                FROM comments
+                GROUP BY uid
+            );
+            """
+            self.execute_update(update_fame_likes_comments_query)
+
+            # Update fame based on dislikes on posts
+            update_fame_dislikes_posts_query = """
+            UPDATE users
+            SET fame = fame - (
+                SELECT COALESCE(SUM(dislike_count), 0)
+                FROM (
+                    SELECT pid, COUNT(*) AS dislike_count
+                    FROM dislikes
+                    GROUP BY pid
+                ) AS post_dislikes
+                JOIN posts ON posts.pid = post_dislikes.pid
+                WHERE posts.uid = users.uid
+            )
+            WHERE uid IN (
+                SELECT uid
+                FROM posts
+                GROUP BY uid
+            );
+            """
+            self.execute_update(update_fame_dislikes_posts_query)
+
+            # Update fame based on dislikes on comments
+            update_fame_dislikes_comments_query = """
+            UPDATE users
+            SET fame = fame - (
+                SELECT COALESCE(SUM(dislike_count), 0)
+                FROM (
+                    SELECT cid, COUNT(*) AS dislike_count
+                    FROM dislikes
+                    GROUP BY cid
+                ) AS comment_dislikes
+                JOIN comments ON comments.cid = comment_dislikes.cid
+                WHERE comments.uid = users.uid
+            )
+            WHERE uid IN (
+                SELECT uid
+                FROM comments
+                GROUP BY uid
+            );
+            """
+            self.execute_update(update_fame_dislikes_comments_query)
+
+            # Commit the changes
+            self.connection.commit()
+            print("User fame updated successfully!")
+        except Exception as e:
+            print(f"Error updating user fame: {e}")
+
 
 
     def create_new_user(self, username, password, email, status=None, bio=None, fav_character=None, fav_region=None):
@@ -670,6 +855,29 @@ class DatabaseManager:
 
         except Exception as e:
             print(f"Error removing dislike from post: {e}")
+
+    def increase_fame(self, uid):
+        try:
+            query = """UPDATE users
+                    SET fame = fame + 1
+                    WHERE uid = ?;
+                    """
+            self.execute_update(query, (uid,))
+
+        except Exception as e:
+            print(f"Error increasing fame: {e}")
+
+    def decrease_fame(self, uid):
+        try:
+            query = """UPDATE users
+                    SET fame = fame - 1
+                    WHERE uid = ?;
+                    """
+            self.execute_update(query, (uid,))
+
+        except Exception as e:
+            print(f"Error decreasing fame: {e}")
+
 
 
     def get_total_received_likes(self):

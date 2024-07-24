@@ -42,6 +42,7 @@ class FriendPostDetails:
         else:
             uid = self.user.get_uid()
             pid = self.post_info[0]
+            author_id = self.post_info[3]
             if choice == "1":
                 post_comments = PostComments(self.user_controller, self.user, self.post_info[0])
                 post_comments.display()
@@ -51,12 +52,12 @@ class FriendPostDetails:
                 if str(self.post_info[3]) == uid:
                     print("You cannot like your own post! Returning to details...")
                 else:
-                    self.handle_like(uid, pid)
+                    self.handle_like(uid, pid, author_id)
             if choice == "4":
                 if str(self.post_info[3]) == uid:
                     print("You cannot dislike your own post! Returning to details...")
                 else:
-                    self.handle_dislike(uid, pid)
+                    self.handle_dislike(uid, pid, author_id)
             
             if choice == "5":
                 print("Returning to Friends Activity...")
@@ -74,18 +75,20 @@ class FriendPostDetails:
         self.user_controller.comment_to_post(uid, pid, content)
         print("Returning to Post...")
 
-    def handle_like(self, uid, cid):
+    def handle_like(self, uid, cid, author_id):
         if self.user_controller.has_user_liked_post(uid, cid):
             print("You have already liked this post! Returning to details...")
         else:
             if self.user_controller.has_user_disliked_post(uid, cid):
                 self.user_controller.remove_dislike_from_post(uid, cid)
             self.user_controller.like_post(uid, cid)
+            self.user_controller.increase_fame(author_id)
         
-    def handle_dislike(self, uid, cid):
+    def handle_dislike(self, uid, cid, author_id):
         if self.user_controller.has_user_disliked_post(uid, cid):
             print("You have already disliked this post! Returning to details...")
         else:
             if self.user_controller.has_user_liked_post(uid, cid):
                 self.user_controller.remove_like_from_post(uid, cid)
             self.user_controller.dislike_post(uid, cid)
+            self.user_controller.decrease_fame(author_id)

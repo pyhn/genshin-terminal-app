@@ -119,6 +119,12 @@ class UserController:
     def remove_dislike_from_comment(self, uid, cid):
         self.db_manager.remove_dislike_from_comment(uid, cid)
 
+    def increase_fame(self, uid):
+        self.db_manager.increase_fame(uid)
+
+    def decrease_fame(self, uid):
+        self.db_manager.decrease_fame(uid)
+
     
     
     
