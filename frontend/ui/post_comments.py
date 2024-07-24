@@ -11,12 +11,12 @@ class PostComments:
         self.comments_list = None
 
 
-    def retrieve_friends_posts(self):
+    def retrieve_comments(self):
         self.comments_list = self.user_controller.retrieve_comments(self.pid)
 
     def display(self):
         while self.decision == False or self.viewing == True:
-            self.retrieve_friends_posts()
+            self.retrieve_comments()
             comment_count = len(self.comments_list)
             print("+----------------------+")
             print("| Viewing all comments |")
