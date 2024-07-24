@@ -182,6 +182,16 @@ class DatabaseManager:
         self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "WHAAAAAAAAAAAAAT THE HEEEEEEEECKKKKKKKKKKKKKKKKK"))
         self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (3, 1, "TEAM FORTRESS 2 IS SO AMAZINNG LMAOOOO"))
 
+
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (1, 1))
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (1, 2))
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (1, 3))
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (3, 1))
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (3, 2))
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (4, 1))
+        self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (4, 2))
+
+
         insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
         self.execute_update(insert_query, (2, 3))
         self.execute_update(insert_query, (3, 2))
@@ -431,6 +441,15 @@ class DatabaseManager:
             INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?);
             """
             self.execute_update(query, (uid, pid, content))
+        except Exception as e:
+            print(f"Error commenting on post: {e}")
+
+    def comment_to_comment(self, uid, pid, cid, content):
+        try:
+            query = """
+            INSERT INTO comments (uid, pid, replyto, text) VALUES (?, ?, ?, ?);
+            """
+            self.execute_update(query, (uid, pid, cid, content))
         except Exception as e:
             print(f"Error commenting on post: {e}")
 

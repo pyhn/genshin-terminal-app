@@ -23,13 +23,15 @@ class CommentDetails:
             print("+--------------------------------+")
             print("| 2. Dislike Comment             |")
             print("+--------------------------------+")
-            print("| 3. Return to Post's Comments   |")
+            print("| 3. Reply to Comment            |")
+            print("+--------------------------------+")
+            print("| 4. Return to Post's Comments   |")
             print("+--------------------------------+")
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
 
     def handle_menu_input(self, choice):
-        options = ["1","2","3"]
+        options = ["1","2","3","4"]
         if choice not in options:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
@@ -47,6 +49,15 @@ class CommentDetails:
                     self.handle_dislike(uid, cid)
 
             if choice == "3":
+                content = Utils.acquire_string_input("Desired","Comment Content")
+                uid = self.user.get_uid() # id of user posting comment
+                cid = self.comment_info[0] # id of comment that is being replied to
+                pid = self.comment_info[3] # id of post 
+                print(f"pid: {self.comment_info[2]}")
+                self.user_controller.comment_to_comment(uid, pid, cid, content)
+                print("Returning to Post's Comments...")
+
+            if choice == "4":
                 print("Returning to Post's Comments...")
                 self.viewing = False
             
