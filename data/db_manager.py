@@ -525,13 +525,25 @@ class DatabaseManager:
     def reject_friend_request(self, requester, requestee):
         try:
             update_query = """
-            UPDATE friend_requests
-            SET status = 'rejected'
+            DELETE FROM friend_requests
             WHERE requester_id = ? AND requestee_id = ?;
             """
             self.execute_update(update_query, (requester, requestee))
         except Exception as e:
             print(f"Error rejecting friend request: {e}")
+
+    def remove_friend(self, uid_1, uid_2):
+        try:
+            query = """
+            DELETE FROM friends
+            WHERE (uid = ? AND friend_id = ?)
+            OR (uid = ? AND friend_id = ?);
+            """
+            self.execute_update(query, (uid_1, uid_2, uid_2, uid_1))
+            
+        except Exception as e:
+            print(f"Error removing friend: {e}")
+
 
     def retrieve_friends_list(self, user):
         try:
