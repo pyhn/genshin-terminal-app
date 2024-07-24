@@ -2,20 +2,21 @@ from .comment_details import CommentDetails
 from backend.utils import Utils
 
 class PostComments:
-    def __init__(self, user_controller, pid) -> None:
+    def __init__(self, user_controller, user, pid) -> None:
         self.user_controller = user_controller
         self.pid = pid
+        self.user = user
         self.decision = False
         self.viewing = True
         self.comments_list = None
 
 
-    def retrieve_friends_posts(self):
+    def retrieve_comments(self):
         self.comments_list = self.user_controller.retrieve_comments(self.pid)
 
     def display(self):
         while self.decision == False or self.viewing == True:
-            self.retrieve_friends_posts()
+            self.retrieve_comments()
             comment_count = len(self.comments_list)
             print("+----------------------+")
             print("| Viewing all comments |")
@@ -50,5 +51,5 @@ class PostComments:
     def handle_friend_choice(self, choice):
         index = choice - 1
         comment_info = self.comments_list[index]
-        comment_details = CommentDetails(self.user_controller, comment_info)
+        comment_details = CommentDetails(self.user_controller, self.user, comment_info)
         comment_details.display()

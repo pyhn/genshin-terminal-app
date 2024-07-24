@@ -1,4 +1,5 @@
 from backend.utils import Utils
+from .post_comments import PostComments
 
 class PostDetails:
     def __init__(self, user_controller, user, post_info) -> None:
@@ -34,7 +35,8 @@ class PostDetails:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
             if choice == "1":
-                pass
+                post_comments = PostComments(self.user_controller, self.user, self.post_info[0])
+                post_comments.display()
             if choice == "2":
                 self.confirm_delete()
             if choice == "3":
