@@ -12,11 +12,12 @@ class CommentDetails:
         print() 
         comment_date = self.comment_info[4][:10]
         comment_content = self.comment_info[5]
-        print(f"Date: {comment_date}")
-        print(f"Content: {Utils.format_content(comment_content)}")
-        print(f"Like Count: {self.comment_info[6]}")
-        print(f"Dislike Count: {self.comment_info[7]}")
+        
         while self.decision == False or self.viewing == True:
+            print(f"Date: {comment_date}")
+            print(f"Content: {Utils.format_content(comment_content)}")
+            print(f"Like Count: {self.comment_info[6]}")
+            print(f"Dislike Count: {self.comment_info[7]}")
             print("+--------------------------------+")
             print("| 1. Like Comment                |")
             print("+--------------------------------+")
@@ -27,18 +28,24 @@ class CommentDetails:
             choice = input("Enter Choice: ")
             self.handle_menu_input(choice)
 
-
     def handle_menu_input(self, choice):
         options = ["1","2","3"]
         if choice not in options:
             print("Invalid Choice. Please Select a Valid Option.\n")
         else:
+            uid = self.user.get_uid()
+            cid = self.comment_info[0]
             if choice == "1":
-                uid = self.user.get_uid()
-                cid = self.comment_info[0]
-                self.user_controller.like_comment(uid, cid)
+                if str(self.comment_info[1]) == uid:
+                    print("You cannot like your own post! Returning to details...")
+                else:
+                    self.handle_like(uid, cid)
             if choice == "2":
-                pass
+                if str(self.comment_info[1]) == uid:
+                    print("You cannot dislike your own post! Returning to details...")
+                else:
+                    self.handle_dislike(uid, cid)
+
             if choice == "3":
                 print("Returning to Post's Comments...")
                 self.viewing = False
@@ -47,4 +54,21 @@ class CommentDetails:
 
     def get_viewing(self):
         return self.viewing
+    
+    def handle_like(self, uid, cid):
+        if self.user_controller.has_user_liked_comment(uid, cid):
+            print("You have already liked this comment! Returning to details...")
+        else:
+            if self.user_controller.has_user_disliked_comment(uid, cid):
+                self.user_controller.remove_dislike_from_comment(uid, cid)
+            self.user_controller.like_comment(uid, cid)
+        
+    def handle_dislike(self, uid, cid):
+        if self.user_controller.has_user_disliked_comment(uid, cid):
+            print("You have already disliked this comment! Returning to details...")
+        else:
+            if self.user_controller.has_user_liked_comment(uid, cid):
+                self.user_controller.remove_like_from_comment(uid, cid)
+            self.user_controller.dislike_comment(uid, cid)
+    
         

@@ -32,7 +32,7 @@ class DatabaseManager:
         self.connection.commit()
 
     def create_user_table(self):
-        create_table_query = '''
+        create_table_query = """
         CREATE TABLE IF NOT EXISTS users (
             uid INTEGER PRIMARY KEY,
             username TEXT NOT NULL,
@@ -43,11 +43,11 @@ class DatabaseManager:
             fav_character TEXT,
             fav_region TEXT
         );
-        '''
+        """
         self.execute_update(create_table_query)
 
     def create_friend_request_table(self):
-        query = '''
+        query = """
         CREATE TABLE IF NOT EXISTS friend_requests (
             request_id INTEGER PRIMARY KEY AUTOINCREMENT,
             requester_id INTEGER,
@@ -58,11 +58,11 @@ class DatabaseManager:
             FOREIGN KEY (requestee_id) REFERENCES users(uid) ON DELETE CASCADE, 
             UNIQUE(requester_id, requestee_id)
         );
-        '''
+        """
         self.execute_update(query)
 
     def create_friends_table(self):
-        query = '''
+        query = """
         CREATE TABLE IF NOT EXISTS friends (
             uid INTEGER,
             friend_id INTEGER,
@@ -71,11 +71,11 @@ class DatabaseManager:
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
             FOREIGN KEY (friend_id) REFERENCES users(uid) ON DELETE CASCADE
         );
-    '''
+    """
         self.execute_update(query)
 
     def create_posts_table(self):
-        query = '''
+        query = """
         CREATE TABLE IF NOT EXISTS posts (
             pid INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
@@ -86,11 +86,11 @@ class DatabaseManager:
             dislikes INTEGER DEFAULT 0,
             FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
             );
-                '''
+                """
         self.execute_update(query)
 
     def create_comments_table(self):
-        query = '''
+        query = """
             CREATE TABLE IF NOT EXISTS comments (
             cid INTEGER PRIMARY KEY AUTOINCREMENT,
             uid INTEGER,
@@ -104,11 +104,11 @@ class DatabaseManager:
             FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
             FOREIGN KEY (replyto) REFERENCES users(uid) ON DELETE CASCADE
         );
-        '''
+        """
         self.execute_update(query)
 
     def create_likes_table(self):
-        query = '''
+        query = """
             CREATE TABLE IF NOT EXISTS likes (
             lid INTEGER PRIMARY KEY AUTOINCREMENT,
             uid INTEGER,
@@ -120,11 +120,11 @@ class DatabaseManager:
             FOREIGN KEY (cid) REFERENCES comments(cid) ON DELETE CASCADE,
             CHECK ((pid IS NOT NULL AND cid IS NULL) OR (pid IS NULL AND cid IS NOT NULL))
         );
-        '''
+        """
         self.execute_update(query)
 
     def create_dislikes_table(self):
-        query = '''
+        query = """
             CREATE TABLE IF NOT EXISTS dislikes (
             did INTEGER PRIMARY KEY AUTOINCREMENT,
             uid INTEGER,
@@ -136,7 +136,7 @@ class DatabaseManager:
             FOREIGN KEY (cid) REFERENCES comments(cid) ON DELETE CASCADE,
             CHECK ((pid IS NOT NULL AND cid IS NULL) OR (pid IS NULL AND cid IS NOT NULL))
         );
-        '''
+        """
         self.execute_update(query)
     
     def drop_table(self, table):
@@ -179,6 +179,8 @@ class DatabaseManager:
         self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Bouldering Pad", "A rectangular crash mat that consists of multiple layers of foam covered in a heavy duty material. The pad is placed where the climber is expected to fall to cushion their landing", 3))
 
         self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "HALLLLLLOOOOOOOOO :D HALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :D"))
+        self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "WHAAAAAAAAAAAAAT THE HEEEEEEEECKKKKKKKKKKKKKKKKK"))
+        self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (3, 1, "TEAM FORTRESS 2 IS SO AMAZINNG LMAOOOO"))
 
         insert_query = """INSERT INTO friends (uid, friend_id) VALUES (?, ?);"""
         self.execute_update(insert_query, (2, 3))
@@ -375,9 +377,9 @@ class DatabaseManager:
     def create_post(self, user, title, content):
         try:
             uid = user.get_uid()
-            query = '''
+            query = """
             INSERT INTO posts (title, body, uid) VALUES (?, ?, ?);
-            '''
+            """
             self.execute_update(query, (title, content, uid))
         except Exception as e:
             print(f"Error creating post: {e}")
@@ -425,9 +427,9 @@ class DatabaseManager:
 
     def comment_to_post(self, uid, pid, content):
         try:
-            query = '''
+            query = """
             INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?);
-            '''
+            """
             self.execute_update(query, (uid, pid, content))
         except Exception as e:
             print(f"Error commenting on post: {e}")
@@ -457,6 +459,8 @@ class DatabaseManager:
                     WHERE cid = ?;
                     """
             self.execute_update(query, (cid,))
+
+            print("Comment successfully liked! Returning to details...")
         except Exception as e:
             print(f"Error liking comment: {e}")
 
@@ -470,6 +474,8 @@ class DatabaseManager:
                     WHERE cid = ?;
                     """
             self.execute_update(query, (cid,))
+
+            print("Comment successfully disliked! Returning to details...")
         except Exception as e:
             print(f"Error disliking comment: {e}")
 
@@ -483,6 +489,8 @@ class DatabaseManager:
                     WHERE pid = ?;
                     """
             self.execute_update(query, (pid,))
+
+            print("Post successfully liked! Returning to details...")
         except Exception as e:
             print(f"Error liking post: {e}")
 
@@ -496,11 +504,162 @@ class DatabaseManager:
                     WHERE pid = ?;
                     """
             self.execute_update(query, (pid,))
+
+            print("Post successfully disliked! Returning to details...")
         except Exception as e:
             print(f"Error disliking post: {e}")
 
+    def has_user_liked_post(self, uid, pid):
+        try:
+            # Check for likes on posts
+            like_query = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM likes
+                WHERE uid = ? AND pid = ?
+            ) AS has_liked;
+            """
+            self.cursor.execute(like_query, (uid, pid))
+            has_liked = self.cursor.fetchone()[0] == 1
+            
+            return has_liked
+
+        except Exception as e:
+            print(f"Error checking if user liked the post: {e}")
+            return False
+        
+    def has_user_disliked_post(self, uid, pid):
+        try:
+            # Check for dislikes on posts
+            dislike_query = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM dislikes
+                WHERE uid = ? AND pid = ?
+            ) AS has_disliked;
+            """
+            self.cursor.execute(dislike_query, (uid, pid))
+            has_disliked = self.cursor.fetchone()[0] == 1
+            
+            return has_disliked
+
+        except Exception as e:
+            print(f"Error checking if user disliked the post: {e}")
+            return False
+        
+    def has_user_liked_comment(self, uid, cid):
+        try:
+            # Check for likes on comments
+            like_query = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM likes
+                WHERE uid = ? AND cid = ?
+            ) AS has_liked;
+            """
+            self.cursor.execute(like_query, (uid, cid))
+            has_liked = self.cursor.fetchone()[0] == 1
+            
+            return has_liked
+
+        except Exception as e:
+            print(f"Error checking if user liked the comment: {e}")
+            return False
+
+    def has_user_disliked_comment(self, uid, cid):
+        try:
+            # Check for dislikes on comments
+            dislike_query = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM dislikes
+                WHERE uid = ? AND cid = ?
+            ) AS has_disliked;
+            """
+            self.cursor.execute(dislike_query, (uid, cid))
+            has_disliked = self.cursor.fetchone()[0] == 1
+            
+            return has_disliked
+
+        except Exception as e:
+            print(f"Error checking if user disliked the comment: {e}")
+            return False
+        
+    def remove_like_from_comment(self, uid, cid):
+        try:
+            # Remove the like from the likes table
+            query = "DELETE FROM likes WHERE cid = ? AND uid = ?;"
+            self.execute_update(query, (cid, uid))
+            
+            # Decrement the like count for the comment
+            update_query = """
+            UPDATE comments
+            SET likes = likes - 1
+            WHERE cid = ?;
+            """
+            self.execute_update(update_query, (cid,))
+            
+            print("Like removed successfully from comment.")
+        except Exception as e:
+            print(f"Error removing like from comment: {e}")
+
+    def remove_dislike_from_comment(self, uid, cid):
+        try:
+            # Remove the dislike from the dislikes table
+            query = "DELETE FROM dislikes WHERE cid = ? AND uid = ?;"
+            self.execute_update(query, (cid, uid))
+            
+            # Decrement the dislike count for the comment
+            update_query = """
+            UPDATE comments
+            SET dislikes = dislikes - 1
+            WHERE cid = ?;
+            """
+            self.execute_update(update_query, (cid,))
+            
+            print("Dislike removed successfully from comment.")
+        except Exception as e:
+            print(f"Error removing dislike from comment: {e}")
+
+    def remove_like_from_post(self, uid, pid):
+        try:
+            # Remove the like from the likes table
+            query = "DELETE FROM likes WHERE pid = ? AND uid = ?;"
+            self.execute_update(query, (pid, uid))
+            
+            # Decrement the like count for the post
+            update_query = """
+            UPDATE posts
+            SET likes = likes - 1
+            WHERE pid = ?;
+            """
+            self.execute_update(update_query, (pid,))
+            
+            print("Like removed successfully from post.")
+        except Exception as e:
+            print(f"Error removing like from post: {e}")
+
+    def remove_dislike_from_post(self, uid, pid):
+        try:
+            # Remove the dislike from the dislikes table
+            query = "DELETE FROM dislikes WHERE pid = ? AND uid = ?;"
+            self.execute_update(query, (pid, uid))
+            
+            # Decrement the dislike count for the post
+            update_query = """
+            UPDATE posts
+            SET dislikes = dislikes - 1
+            WHERE pid = ?;
+            """
+            self.execute_update(update_query, (pid,))
+            
+            print("Dislike removed successfully from post.")
+        except Exception as e:
+            print(f"Error removing dislike from post: {e}")
+
+
     def get_total_received_likes(self):
-        query = '''
+        query = """
         SELECT 
             u.uid, 
             u.username, 
@@ -519,5 +678,6 @@ class DatabaseManager:
             GROUP BY c.uid) cl ON u.uid = cl.uid
         GROUP BY 
             u.uid, u.username;
-        '''
+        """
         self.execute_query(query)
+
