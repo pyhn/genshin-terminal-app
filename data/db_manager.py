@@ -617,8 +617,6 @@ class DatabaseManager:
             WHERE cid = ?;
             """
             self.execute_update(update_query, (cid,))
-            
-            print("Like removed successfully from comment.")
         except Exception as e:
             print(f"Error removing like from comment: {e}")
 
@@ -636,7 +634,6 @@ class DatabaseManager:
             """
             self.execute_update(update_query, (cid,))
             
-            print("Dislike removed successfully from comment.")
         except Exception as e:
             print(f"Error removing dislike from comment: {e}")
 
@@ -654,7 +651,6 @@ class DatabaseManager:
             """
             self.execute_update(update_query, (pid,))
             
-            print("Like removed successfully from post.")
         except Exception as e:
             print(f"Error removing like from post: {e}")
 
@@ -671,8 +667,7 @@ class DatabaseManager:
             WHERE pid = ?;
             """
             self.execute_update(update_query, (pid,))
-            
-            print("Dislike removed successfully from post.")
+
         except Exception as e:
             print(f"Error removing dislike from post: {e}")
 
@@ -698,5 +693,6 @@ class DatabaseManager:
         GROUP BY 
             u.uid, u.username;
         """
-        self.execute_query(query)
+        results = self.execute_query(query)
+        return results
 
