@@ -34,7 +34,7 @@ class PostsMenu:
                 posts_list = PostsList(self.user_controller, self.user)
                 posts_list.display()
             if choice == "2":
-                post_title = Utils.acquire_string_inpute("Desired", "Title")
+                post_title = Utils.acquire_string_input("Desired", "Title")
                 post_content = Utils.acquire_string_input("Desired", "Content")
                 self.user_controller.create_post(self.user, post_title, post_content)
             if choice == "3":

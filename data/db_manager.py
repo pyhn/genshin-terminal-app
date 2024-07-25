@@ -82,11 +82,11 @@ class DatabaseManager:
             pid INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             body TEXT NOT NULL,
-            uid INTEGER,
+            author INTEGER,
             post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             likes INTEGER DEFAULT 0,
             dislikes INTEGER DEFAULT 0,
-            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
+            FOREIGN KEY (author) REFERENCES users(uid) ON DELETE CASCADE
         );
         """
         self.execute_update(query)
@@ -95,14 +95,14 @@ class DatabaseManager:
         query = """
         CREATE TABLE IF NOT EXISTS comments (
             cid INTEGER PRIMARY KEY AUTOINCREMENT,
-            uid INTEGER,
+            author INTEGER,
             replyto INTEGER DEFAULT NULL,
             pid INTEGER,
             comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             text TEXT NOT NULL,
             likes INTEGER DEFAULT 0,
             dislikes INTEGER DEFAULT 0,
-            FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
+            FOREIGN KEY (author) REFERENCES users(uid) ON DELETE CASCADE,
             FOREIGN KEY (pid) REFERENCES posts(pid) ON DELETE CASCADE,
             FOREIGN KEY (replyto) REFERENCES comments(cid) ON DELETE CASCADE
         );
@@ -139,6 +139,28 @@ class DatabaseManager:
             CHECK ((pid IS NOT NULL AND cid IS NULL) OR (pid IS NULL AND cid IS NOT NULL))
         );
         """
+        self.execute_update(query)
+
+    def create_table_tags(self):
+        query = """
+         CREATE TABLE IF NOT EXISTS tags (
+            term TEXT,
+            PRIMARY KEY (term)
+        );
+            """
+        self.execute_update(query)
+        
+    def create_table_mentions(self):
+        query = """
+         CREATE TABLE IF NOT EXISTS mentions (
+            author INT,
+            pid INT,
+            term TEXT,
+            PRIMARY KEY (author, pid, term),
+            FOREIGN KEY (author, pid) REFERENCES posts(author, pid),
+            FOREIGN KEY (term) REFERENCES tags(term)
+        );
+            """
         self.execute_update(query)
 
     
@@ -186,19 +208,19 @@ class DatabaseManager:
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (2, 4))
         self.cursor.execute("INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?)", (3, 4))
         
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Lorem Ippsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vehicula varius tincidunt. Integer dui nibh, iaculis quis diam et, aliquam eleifend justo. Aenean nec est sed ex malesuada imperdiet sed a erat. Sed at maximus urna, fermentum pretium orci. Donec facilisis dignissim libero, vitae sagittis sapien porta quis. Maecenas quis nisi sit amet justo sagittis laoreet viverra id nisi. Etiam vehicula tempus cursus. Aenean dignissim augue at augue scelerisque consectetur. Fusce tempus, est ac ornare consequat, purus ante pellentesque mauris, sit amet euismod metus est non ex. Pellentesque quis purus dapibus, tempus enim ac, facilisis dolor.", 1))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Poggeres", "Guys chat are we pogging like crazy or nah, coz lowkey im pogging like crazy and its just wayyyyyyyyyy tooo pog rn hahaahah.", 1))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Hehehe", "Muuheheheuehuuhueuheuhuhuehuehu Muheuheuheuhuehuheuheh eheheheheh heu uehuehuh uheu heuh euhuehhehu uehmeueehhee..", 1))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Crimp", "Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering", 2))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Slab", "Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering SlabBouldering bouldering bouldering Slab Bouldering bouldering bouldering", 2))                                                                              
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Dropknee", "When one foot inside edges while the other outside edges, the knee of the outside edging leg is lowered so that the feet are pushing away from each other rather than down", 2))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Gaston", "Gripping a vertical hold with the arm bent at the elbow and the hand, thumb down, pulling the hold away from the body.", 3))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Bicycle", "A technique in which one foot pushes a hold conventionally while the other foot toe hooks the same, or a nearby, hold. Most commonly used when climbing roofs ", 3))
-        self.cursor.execute("INSERT INTO posts (title, body, uid) VALUES (?, ?, ?)", ("Bouldering Pad", "A rectangular crash mat that consists of multiple layers of foam covered in a heavy duty material. The pad is placed where the climber is expected to fall to cushion their landing", 3))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Lorem Ippsum", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus vehicula varius tincidunt. Integer dui nibh, iaculis quis diam et, aliquam eleifend justo. Aenean nec est sed ex malesuada imperdiet sed a erat. Sed at maximus urna, fermentum pretium orci. Donec facilisis dignissim libero, vitae sagittis sapien porta quis. Maecenas quis nisi sit amet justo sagittis laoreet viverra id nisi. Etiam vehicula tempus cursus. Aenean dignissim augue at augue scelerisque consectetur. Fusce tempus, est ac ornare consequat, purus ante pellentesque mauris, sit amet euismod metus est non ex. Pellentesque quis purus dapibus, tempus enim ac, facilisis dolor.", 1))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Poggeres", "Guys chat are we pogging like crazy or nah, coz lowkey im pogging like crazy and its just wayyyyyyyyyy tooo pog rn hahaahah.", 1))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Hehehe", "Muuheheheuehuuhueuheuhuhuehuehu Muheuheuheuhuehuheuheh eheheheheh heu uehuehuh uheu heuh euhuehhehu uehmeueehhee..", 1))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Crimp", "Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering Bouldering bouldering bouldering", 2))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Slab", "Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering Slab Bouldering bouldering bouldering SlabBouldering bouldering bouldering Slab Bouldering bouldering bouldering", 2))                                                                              
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Dropknee", "When one foot inside edges while the other outside edges, the knee of the outside edging leg is lowered so that the feet are pushing away from each other rather than down", 2))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Gaston", "Gripping a vertical hold with the arm bent at the elbow and the hand, thumb down, pulling the hold away from the body.", 3))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Bicycle", "A technique in which one foot pushes a hold conventionally while the other foot toe hooks the same, or a nearby, hold. Most commonly used when climbing roofs ", 3))
+        self.cursor.execute("INSERT INTO posts (title, body, author) VALUES (?, ?, ?)", ("Bouldering Pad", "A rectangular crash mat that consists of multiple layers of foam covered in a heavy duty material. The pad is placed where the climber is expected to fall to cushion their landing", 3))
 
-        self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "HALLLLLLOOOOOOOOO :D HALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :D"))
-        self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (2, 1, "WHAAAAAAAAAAAAAT THE HEEEEEEEECKKKKKKKKKKKKKKKKK"))
-        self.cursor.execute("INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?)", (3, 1, "TEAM FORTRESS 2 IS SO AMAZINNG LMAOOOO"))
+        self.cursor.execute("INSERT INTO comments (author, pid, text) VALUES (?, ?, ?)", (2, 1, "HALLLLLLOOOOOOOOO :D HALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :DHALLLLLLOOOOOOOOO :D"))
+        self.cursor.execute("INSERT INTO comments (author, pid, text) VALUES (?, ?, ?)", (2, 1, "WHAAAAAAAAAAAAAT THE HEEEEEEEECKKKKKKKKKKKKKKKKK"))
+        self.cursor.execute("INSERT INTO comments (author, pid, text) VALUES (?, ?, ?)", (3, 1, "TEAM FORTRESS 2 IS SO AMAZINNG LMAOOOO"))
 
 
         self.cursor.execute("INSERT INTO likes (uid, cid) VALUES (?, ?)", (1, 1))
@@ -305,12 +327,12 @@ class DatabaseManager:
                     GROUP BY pid
                 ) AS post_likes
                 JOIN posts ON posts.pid = post_likes.pid
-                WHERE posts.uid = users.uid
+                WHERE posts.author = users.uid
             )
             WHERE uid IN (
-                SELECT uid
+                SELECT author
                 FROM posts
-                GROUP BY uid
+                GROUP BY author
             );
             """
             self.execute_update(update_fame_likes_posts_query)
@@ -326,12 +348,12 @@ class DatabaseManager:
                     GROUP BY cid
                 ) AS comment_likes
                 JOIN comments ON comments.cid = comment_likes.cid
-                WHERE comments.uid = users.uid
+                WHERE comments.author = users.uid
             )
             WHERE uid IN (
-                SELECT uid
+                SELECT author
                 FROM comments
-                GROUP BY uid
+                GROUP BY author
             );
             """
             self.execute_update(update_fame_likes_comments_query)
@@ -347,12 +369,12 @@ class DatabaseManager:
                     GROUP BY pid
                 ) AS post_dislikes
                 JOIN posts ON posts.pid = post_dislikes.pid
-                WHERE posts.uid = users.uid
+                WHERE posts.author = users.uid
             )
             WHERE uid IN (
-                SELECT uid
+                SELECT author
                 FROM posts
-                GROUP BY uid
+                GROUP BY author
             );
             """
             self.execute_update(update_fame_dislikes_posts_query)
@@ -368,12 +390,12 @@ class DatabaseManager:
                     GROUP BY cid
                 ) AS comment_dislikes
                 JOIN comments ON comments.cid = comment_dislikes.cid
-                WHERE comments.uid = users.uid
+                WHERE comments.author = users.uid
             )
             WHERE uid IN (
-                SELECT uid
+                SELECT author
                 FROM comments
-                GROUP BY uid
+                GROUP BY author
             );
             """
             self.execute_update(update_fame_dislikes_comments_query)
@@ -585,7 +607,7 @@ class DatabaseManager:
         try:
             uid = user.get_uid()
             query = """
-            INSERT INTO posts (title, body, uid) VALUES (?, ?, ?);
+            INSERT INTO posts (title, body, author) VALUES (?, ?, ?);
             """
             self.execute_update(query, (title, content, uid))
         except Exception as e:
@@ -597,7 +619,7 @@ class DatabaseManager:
             query = """
             SELECT p.*
             FROM posts p
-            WHERE p.uid = ?;
+            WHERE p.author = ?;
             """
 
             results = self.execute_query(query, (uid,))
@@ -621,7 +643,7 @@ class DatabaseManager:
             query = """
             SELECT p.*
             FROM posts p
-            JOIN friends f ON p.uid = f.friend_id
+            JOIN friends f ON p.author = f.friend_id
             WHERE f.uid = ?;
             """
             results = self.execute_query(query, (uid,))
@@ -635,7 +657,7 @@ class DatabaseManager:
     def comment_to_post(self, uid, pid, content):
         try:
             query = """
-            INSERT INTO comments (uid, pid, text) VALUES (?, ?, ?);
+            INSERT INTO comments (author, pid, text) VALUES (?, ?, ?);
             """
             self.execute_update(query, (uid, pid, content))
         except Exception as e:
@@ -644,7 +666,7 @@ class DatabaseManager:
     def comment_to_comment(self, uid, pid, cid, content):
         try:
             query = """
-            INSERT INTO comments (uid, pid, replyto, text) VALUES (?, ?, ?, ?);
+            INSERT INTO comments (author, pid, replyto, text) VALUES (?, ?, ?, ?);
             """
             self.execute_update(query, (uid, pid, cid, content))
         except Exception as e:
@@ -891,28 +913,4 @@ class DatabaseManager:
             print(f"Error decreasing fame: {e}")
 
 
-
-    def get_total_received_likes(self):
-        query = """
-        SELECT 
-            u.uid, 
-            u.username, 
-            COALESCE(SUM(pl.like_count), 0) + COALESCE(SUM(cl.like_count), 0) AS total_likes
-        FROM 
-            users u
-        LEFT JOIN 
-            (SELECT p.uid, COUNT(l.lid) AS like_count 
-            FROM posts p 
-            LEFT JOIN likes l ON p.pid = l.pid 
-            GROUP BY p.uid) pl ON u.uid = pl.uid
-        LEFT JOIN 
-            (SELECT c.uid, COUNT(l.lid) AS like_count 
-            FROM comments c 
-            LEFT JOIN likes l ON c.cid = l.cid 
-            GROUP BY c.uid) cl ON u.uid = cl.uid
-        GROUP BY 
-            u.uid, u.username;
-        """
-        results = self.execute_query(query)
-        return results
 
