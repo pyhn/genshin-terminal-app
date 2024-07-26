@@ -141,7 +141,7 @@ class DatabaseManager:
         """
         self.execute_update(query)
 
-    def create_table_tags(self):
+    def create_tags_table(self):
         query = """
          CREATE TABLE IF NOT EXISTS tags (
             term TEXT,
@@ -150,14 +150,15 @@ class DatabaseManager:
             """
         self.execute_update(query)
         
-    def create_table_mentions(self):
+    def create_mentions_table(self):
         query = """
          CREATE TABLE IF NOT EXISTS mentions (
             author INT,
             pid INT,
             term TEXT,
             PRIMARY KEY (author, pid, term),
-            FOREIGN KEY (author, pid) REFERENCES posts(author, pid),
+            FOREIGN KEY (author) REFERENCES users(uid),
+            FOREIGN KEY (pid) REFERENCES posts(pid),
             FOREIGN KEY (term) REFERENCES tags(term)
         );
             """
@@ -912,5 +913,37 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error decreasing fame: {e}")
 
+    def retrieve_most_recent_post_by_uid(self, user_id):
+        try:
+            query = """
+            SELECT * 
+            FROM posts 
+            WHERE author = ? 
+            ORDER BY post_date DESC 
+            LIMIT 1;
+            """
+            result = self.execute_query(query, (user_id,))[0]
+            if result:
+                return result
+            else:
+                return None
+        except Exception as e:
+            print(f"Error retrieving most recent post: {e}")
 
+    def add_tags(self, words):
+        query = "INSERT OR IGNORE INTO tags (term) VALUES (?);"
+        for word in words:
+            try:
+                self.execute_update(query, (word,))
+            except Exception as e:
+                print(f"Error adding tag [{word}]: {e}")
+
+    def add_tags_to_mentions(self, uid, pid, words):
+        query = "INSERT OR IGNORE INTO mentions (author, pid, term) VALUES (?, ?, ?);"
+        for word in words:
+            try:
+                self.execute_update(query, (uid, pid, word))
+            except Exception as e:
+                print(f"Error adding tag [{word}] to mentions: {e}")
+            
 

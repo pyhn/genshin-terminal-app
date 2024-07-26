@@ -128,6 +128,17 @@ class UserController:
     def decrease_fame(self, uid):
         self.db_manager.decrease_fame(uid)
 
+    def retrieve_most_recent_post_by_uid(self, user_id):
+        result = self.db_manager.retrieve_most_recent_post_by_uid(user_id)
+        return result
+    
+    def add_tags_to_table(self, words):
+        self.db_manager.add_tags(words)
+
+    def add_tags_to_mentions(self, uid, pid, post_tags):
+        self.db_manager.add_tags_to_mentions(uid, pid, post_tags)
+
+
     
     
     

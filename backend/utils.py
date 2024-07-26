@@ -35,7 +35,11 @@ class Utils:
     def acquire_string_input(adjective, info_type):
         confirmed = False
         while not confirmed:
-            user_input = input(f"Enter {adjective.capitalize()} {info_type.capitalize()}: ")
+            user_input = input(f"Enter {adjective.capitalize()} {info_type.capitalize()}: ").strip()
+            if not user_input:
+                print(f"{info_type.capitalize()} cannot be empty. Please enter valid {info_type}.")
+                continue
+
             confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
 
             while confirm_input not in ["y", "n"]:
@@ -45,3 +49,30 @@ class Utils:
             if confirm_input == "y":
                 confirmed = True
                 return user_input
+
+            
+    @staticmethod
+    def acquire_multi_string_input(adjective, info_type):
+        confirmed = False
+        while not confirmed:
+            user_input = input(f"Enter {adjective.capitalize()} {info_type.capitalize()} (separated by commas): ").strip()
+            if not user_input:
+                print(f"{info_type.capitalize()} cannot be empty. Please enter a valid {info_type}.")
+                continue
+
+            confirm_input = input(f"Accept {info_type.capitalize()}: [{user_input}]? (y/n): ").lower().strip()
+
+            while confirm_input not in ["y", "n"]:
+                print("Please choose a valid option.")
+                confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
+
+            if confirm_input == "y":
+                confirmed = True
+                # split the input by commas and strip any extra whitespace
+                word_list = [word.strip().lower() for word in user_input.split(",") if word.strip()]
+                if not word_list:
+                    print(f"{info_type.capitalize()} cannot be empty after processing. Please enter valid {info_type}.")
+                    confirmed = False
+                    continue
+                return word_list
+
