@@ -36,6 +36,7 @@ class PostsMenu:
             if choice == "2":
                 post_title = Utils.acquire_string_input("Desired", "Title")
                 post_content = Utils.acquire_string_input("Desired", "Content")
+                post_tags = Utils.acquire_multi_string_input("Desired", "Tag(s) [Seperated by commas]")
                 self.user_controller.create_post(self.user, post_title, post_content)
             if choice == "3":
                 print("Returning to Dashboard...")

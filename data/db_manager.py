@@ -912,5 +912,20 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error decreasing fame: {e}")
 
-
+    def retrieve_most_recent_post_by_uid(self, user_id):
+        try:
+            query = """
+            SELECT * 
+            FROM posts 
+            WHERE author = ? 
+            ORDER BY post_date DESC 
+            LIMIT 1;
+            """
+            result = self.execute_query(query, (user_id,))
+            if result:
+                return result
+            else:
+                return None
+        except Exception as e:
+            print(f"Error retrieving most recent post: {e}")
 
