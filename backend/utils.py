@@ -60,7 +60,7 @@ class Utils:
                 print(f"{info_type.capitalize()} cannot be empty. Please enter a valid {info_type}.")
                 continue
 
-            confirm_input = input(f"Accept {info_type.capitalize()}? (y/n): ").lower().strip()
+            confirm_input = input(f"Accept {info_type.capitalize()}: [{user_input}]? (y/n): ").lower().strip()
 
             while confirm_input not in ["y", "n"]:
                 print("Please choose a valid option.")
@@ -69,7 +69,7 @@ class Utils:
             if confirm_input == "y":
                 confirmed = True
                 # split the input by commas and strip any extra whitespace
-                word_list = [word.strip() for word in user_input.split(",") if word.strip()]
+                word_list = [word.strip().lower() for word in user_input.split(",") if word.strip()]
                 if not word_list:
                     print(f"{info_type.capitalize()} cannot be empty after processing. Please enter valid {info_type}.")
                     confirmed = False

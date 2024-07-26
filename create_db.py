@@ -15,14 +15,14 @@ def main():
     db.drop_table("users")
 
     db.create_user_table()
-    db.create_table_tags()
+    db.create_tags_table()
     db.create_friend_request_table()
     db.create_friends_table()
     db.create_posts_table()
     db.create_comments_table()
     db.create_likes_table()
     db.create_dislikes_table()
-    db.create_table_mentions()
+    db.create_mentions_table()
     
     db.insert_test_data()
     
