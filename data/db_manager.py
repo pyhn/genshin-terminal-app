@@ -614,13 +614,16 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error creating post: {e}")
 
-    def retrieve_posts_list(self, user):
+    def retrieve_posts_list(self, user, sort_order):
         try:
             uid = user.get_uid()
-            query = """
+            sort_type = sort_order[0]
+            order_type = sort_order[1]
+            query = f"""
             SELECT p.*
             FROM posts p
-            WHERE p.author = ?;
+            WHERE p.author = ?
+            ORDER BY {sort_type} {order_type};
             """
 
             results = self.execute_query(query, (uid,))
@@ -638,14 +641,17 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error deleting post: {e}")
 
-    def retrieve_friends_posts(self, user):
+    def retrieve_friends_posts(self, user, sort_order):
         try:
             uid = user.get_uid()
-            query = """
+            sort_type = sort_order[0]
+            order_type = sort_order[1]
+            query = f"""
             SELECT p.*
             FROM posts p
             JOIN friends f ON p.author = f.friend_id
-            WHERE f.uid = ?;
+            WHERE f.uid = ?
+            ORDER BY {sort_type} {order_type};
             """
             results = self.execute_query(query, (uid,))
             if results:
@@ -673,12 +679,15 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error commenting on post: {e}")
 
-    def retrieve_comments(self, pid):
+    def retrieve_comments(self, pid, sort_order):
         try:
-            query = """
+            sort_type = sort_order[0]
+            order_type = sort_order[1]
+            query = f"""
             SELECT * 
             FROM comments 
-            WHERE pid = ?;
+            WHERE pid = ?
+            ORDER BY {sort_type} {order_type};
             """
             results = self.execute_query(query, (pid,))
             if results:

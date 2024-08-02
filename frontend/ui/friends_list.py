@@ -25,7 +25,7 @@ class FriendsList:
                 input("You have 0 Friends Added. Press Enter to Return to Friends Menu.")
                 break
             
-            for i,friend in enumerate(self.friends_list):
+            for i,friend in enumerate(self.friends_list): #here
                 print(f"{i + 1}. Username: {friend[1]}, Status: {friend[4]}")
             choice = input("Enter Choice [or Enter to Return to Friends Menu]: ")
             self.handle_menu_input(choice)

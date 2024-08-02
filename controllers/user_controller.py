@@ -61,15 +61,15 @@ class UserController:
     def create_post(self, user, title, content):
         self.db_manager.create_post(user, title, content)
 
-    def retrieve_posts_list(self, user):
-        result = self.db_manager.retrieve_posts_list(user)
+    def retrieve_posts_list(self, user, sort_order):
+        result = self.db_manager.retrieve_posts_list(user, sort_order)
         return result
     
     def delete_post(self, pid):
         self.db_manager.delete_post(pid)
 
-    def retrieve_friends_posts(self, user):
-        result = self.db_manager.retrieve_friends_posts(user)
+    def retrieve_friends_posts(self, user, sort_order):
+        result = self.db_manager.retrieve_friends_posts(user, sort_order)
         return result
     
     def comment_to_post(self, uid, pid, content):
@@ -78,8 +78,8 @@ class UserController:
     def comment_to_comment(self, uid, pid, cid, content):
         self.db_manager.comment_to_comment(uid, pid, cid, content)
 
-    def retrieve_comments(self, pid):
-        result = self.db_manager.retrieve_comments(pid)
+    def retrieve_comments(self, pid, sort_order):
+        result = self.db_manager.retrieve_comments(pid, sort_order)
         return result
     
     def like_comment(self, cid, uid):

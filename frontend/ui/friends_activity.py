@@ -1,5 +1,7 @@
 from .friend_post_details import FriendPostDetails
 from backend.utils import Utils
+from frontend.general_interfaces import GenInterfaces
+
 class FriendsActivity:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -9,22 +11,24 @@ class FriendsActivity:
         self.friends_posts = None
 
 
-    def retrieve_friends_posts(self):
-        self.friends_posts = self.user_controller.retrieve_friends_posts(self.user)
+    def retrieve_friends_posts(self, sort_order):
+        self.friends_posts = self.user_controller.retrieve_friends_posts(self.user, sort_order)
 
     def display(self):
         while self.decision == False or self.viewing == True:
-            self.retrieve_friends_posts()
-            friends_post_count = len(self.friends_posts)
             print("+-----------------------------------+")
             print("| Welcome to your Friends Activity  |")
             print("+-----------------------------------+")
+            sort_order = GenInterfaces.acquire_sort_order("post")
+            self.retrieve_friends_posts(sort_order)
+            friends_post_count = len(self.friends_posts)
 
+            
             if friends_post_count == 0:
                 input("Your Friends Have 0 Posts. Press Enter to Return to Friends Menu.")
                 break
             
-            for i, post in enumerate(self.friends_posts):
+            for i, post in enumerate(self.friends_posts): #here
                 friend_info = self.user_controller.get_user_info_by_id(post[3])
                 friend_name = friend_info[1]
                 print(f"{i + 1}. [Friend]: {friend_name} [Title]: {post[1]} [Content]: {Utils.truncate_string(post[2])}")

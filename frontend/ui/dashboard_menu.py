@@ -2,6 +2,8 @@ from .user_profile import UserProfile
 from .friends_menu import FriendsMenu
 from .user_notifications import UserNotifications
 from .posts_menu import PostsMenu
+from .search_menu import SearchMenu
+
 class DashboardMenu:
     def __init__(self, user_controller) -> None:
         self.user = None
@@ -61,8 +63,9 @@ class DashboardMenu:
                 self.viewing = posts_menu.get_viewing()
 
             if choice == "4":
-                print("Visiting Search.")
-
+                search = SearchMenu(self.user_controller, self.user)
+                search.display()
+                self.viewing = search.get_viewing()
             if choice == "5":
                 notifs = UserNotifications(self.user_controller, self.user, self.requests)
                 notifs.display()

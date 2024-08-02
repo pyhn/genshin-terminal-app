@@ -1,5 +1,6 @@
 from .comment_details import CommentDetails
 from backend.utils import Utils
+from frontend.general_interfaces import GenInterfaces
 
 class PostComments:
     def __init__(self, user_controller, user, pid) -> None:
@@ -11,22 +12,24 @@ class PostComments:
         self.comments_list = None
 
 
-    def retrieve_comments(self):
-        self.comments_list = self.user_controller.retrieve_comments(self.pid)
+    def retrieve_comments(self, sort_order):
+        self.comments_list = self.user_controller.retrieve_comments(self.pid, sort_order)
 
     def display(self):
         while self.decision == False or self.viewing == True:
-            self.retrieve_comments()
-            comment_count = len(self.comments_list)
             print("+----------------------+")
             print("| Viewing all comments |")
             print("+----------------------+")
+
+            sort_order = GenInterfaces.acquire_sort_order("comment")
+            self.retrieve_comments(sort_order)
+            comment_count = len(self.comments_list)
 
             if comment_count == 0:
                 input("This post has no comments. Returning to Post Details.")
                 break
             
-            for i, comment in enumerate(self.comments_list):
+            for i, comment in enumerate(self.comments_list): #here
                 author_info = self.user_controller.get_user_info_by_id(comment[1])
                 author_name = author_info[1]
                 print(f"{i + 1}. [Author]: {author_name} [Content]: {Utils.truncate_string(comment[5])}")

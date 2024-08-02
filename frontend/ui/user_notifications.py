@@ -17,7 +17,7 @@ class UserNotifications:
                 input("You have 0 Notifcations. Press Enter to Return to Dashboard.")
                 break
 
-            for i, entry in enumerate(self.requests):
+            for i, entry in enumerate(self.requests): # here
                 print(f"{i + 1}. {entry[0]} has sent you a friend request!")
             choice = input("Enter Choice [or Enter to Return to Dashboard]: ")
             self.handle_menu_input(choice)
