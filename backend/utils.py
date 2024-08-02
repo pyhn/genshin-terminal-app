@@ -75,4 +75,3 @@ class Utils:
                     confirmed = False
                     continue
                 return word_list
-

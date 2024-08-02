@@ -1,6 +1,6 @@
 from .post_details import PostDetails
 from backend.utils import Utils
-
+from frontend.general_interfaces import GenInterfaces
 class PostsList:
     def __init__(self, user_controller, user) -> None:
         self.user_controller = user_controller
@@ -10,22 +10,23 @@ class PostsList:
         self.posts_list = None
 
 
-    def retrieve_posts_list(self):
-        self.posts_list = self.user_controller.retrieve_posts_list(self.user)
+    def retrieve_posts_list(self, sort_order):
+        self.posts_list = self.user_controller.retrieve_posts_list(self.user, sort_order)
 
     def display(self):
         while self.decision == False or self.viewing == True:
-            self.retrieve_posts_list()
-            post_count = len(self.posts_list)
             print("+-------------------------------+")
             print("| Welcome to your Posts List    |")
             print("+-------------------------------+")
+            sort_order = GenInterfaces.acquire_sort_order("post")
+            self.retrieve_posts_list(sort_order)
+            post_count = len(self.posts_list)
 
             if post_count == 0:
                 input("You have 0 Posts. Press Enter to Return to Posts Menu.")
                 break
             
-            for i,post in enumerate(self.posts_list):
+            for i,post in enumerate(self.posts_list): #here
                 print(f"{i + 1}. [Title]: {post[1]} [Content]: {Utils.truncate_string(post[2])}")
             choice = input("Enter Choice [or Enter to Return to Posts Menu]: ")
             self.handle_menu_input(choice)
