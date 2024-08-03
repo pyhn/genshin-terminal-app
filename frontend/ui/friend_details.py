@@ -49,7 +49,7 @@ class FriendDetails:
         confirm_login = input("Remove friend? (y/n): ").lower().strip()
         while confirm_login not in confirm_options:
             print("Please choose a valid option.")
-            confirm_login = input("Log In? (y/n): ").lower().strip()
+            confirm_login = input("Remove Friend? (y/n): ").lower().strip()
         
         if confirm_login == "y":
             uid = self.user.get_uid()

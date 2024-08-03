@@ -10,12 +10,12 @@ class UserController:
         new_uid = self.db_manager.create_new_user(username, password, email)
         return new_uid
 
-    def get_user_pass_by_id(self, user_id):
-        result = self.db_manager.get_user_pass_by_id(user_id)
+    def retrieve_user_pass_by_id(self, user_id):
+        result = self.db_manager.retrieve_user_pass_by_id(user_id)
         return result
     
-    def get_user_info_by_id(self, user_id):
-        result = self.db_manager.get_user_info_by_id(user_id)
+    def retrieve_user_info_by_id(self, user_id):
+        result = self.db_manager.retrieve_user_info_by_id(user_id)
         return result
         
     def update_user_info(self, user):
@@ -138,6 +138,33 @@ class UserController:
     def add_tags_to_mentions(self, uid, pid, post_tags):
         self.db_manager.add_tags_to_mentions(uid, pid, post_tags)
 
+    def retrieve_posts_with_keywords(self, keywords):
+        result = self.db_manager.retrieve_posts_with_keywords(keywords)
+        return result
+    
+    def retrieve_posts_with_tags(self, tags):
+        result = self.db_manager.retrieve_posts_with_tags(tags)
+        return result
+
+    def retrieve_top_10_liked_posts(self):
+        result = self.db_manager.retrieve_top_10_liked_posts()
+        return result
+
+    def retrieve_top_10_liked_comments(self):
+        result = self.db_manager.retrieve_top_10_liked_comments()
+        return result
+
+    def retrieve_top_10_most_famous_users(self):
+        result = self.db_manager.retrieve_top_10_most_famous_users()
+        return result
+
+    def retrieve_top_10_liked_posts_last_24_hours(self):
+        result = self.db_manager.retrieve_top_10_liked_posts_last_24_hours()
+        return result
+
+    def retrieve_users_with_name(self, name):
+        result = self.db_manager.retrieve_users_with_name(name)
+        return result
 
     
     
