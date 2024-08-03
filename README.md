@@ -8,6 +8,7 @@ Genshin Terminal App is a terminal-based application designed to manage user pro
 - Friend Requests: Send, accept, and reject friend requests.
 - Friends List: View a list of friends and manage friendships.
 - Posts: Create, view, and delete posts.
+- Search: Search based on keyword, tag, user, or view top posts, comments, users, or trending posts.
 - Comments: Add comments to posts, reply to other comments.
 
 ## Installation
