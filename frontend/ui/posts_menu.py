@@ -33,6 +33,7 @@ class PostsMenu:
             if choice == "1":
                 posts_list = PostsList(self.user_controller, self.user)
                 posts_list.display()
+
             if choice == "2":
                 
                 post_title = Utils.acquire_string_input("Desired", "Title")

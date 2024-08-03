@@ -56,7 +56,6 @@ class FriendsMenu:
             user_id = input(f"Enter User ID (or Press Enter to Return to Friends Menu): ")
             if user_id.strip() == "":
                 break
-
             if user_id == self.user.get_uid():
                 print("You cannot add yourself.")
             elif user_id in friends_list:

@@ -411,7 +411,7 @@ class DatabaseManager:
 
     def create_new_user(self, username, password, email, status=None, bio=None, fav_character=None, fav_region=None):
         try:
-            # Get the maximum user ID currently in the table
+            # retrieve the maximum user ID currently in the table
             self.cursor.execute("SELECT MAX(uid) FROM users")
             max_uid = self.cursor.fetchone()[0]
 
@@ -430,7 +430,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error creating new user: {e}")
 
-    def get_user_pass_by_id(self, user_id):
+    def retrieve_user_pass_by_id(self, user_id):
         try:
             user_query = "SELECT username, password FROM users WHERE uid = ?"
             result = self.execute_query(user_query, (user_id,))
@@ -448,7 +448,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error retrieving user password: {e}")
 
-    def get_user_info_by_id(self, user_id):
+    def retrieve_user_info_by_id(self, user_id):
         try:
             user_query = "SELECT * FROM users WHERE uid = ?"
             result = self.execute_query(user_query, (user_id,))
@@ -506,9 +506,9 @@ class DatabaseManager:
             INSERT INTO friend_requests (requester_id, requestee_id) VALUES (?, ?) 
             """
             self.execute_update(query, (requester, requestee))
-            print("Friend Request Sent. Returning to Friends Menu...")
+            print("Friend Request Sent.")
         except sqlite3.IntegrityError as e:
-            print(f"Failed to send friend request. Returning to Friends Menu.")
+            print(f"Failed to send friend request: {e}")
         except Exception as e:
             print(f"Error sending friend request: {e}")
 
@@ -954,5 +954,150 @@ class DatabaseManager:
                 self.execute_update(query, (uid, pid, word))
             except Exception as e:
                 print(f"Error adding tag [{word}] to mentions: {e}")
+
+    def retrieve_posts_with_tags(self, tags):
+        # create a placeholder string for the number of tags
+        placeholders = ', '.join(['?'] * len(tags))
+        try:
+            # Subquery to get the pids that match the tags
+            subquery = f"SELECT DISTINCT pid FROM mentions WHERE term IN ({placeholders})"
+            
+            # Main query to get the posts that match the pids from the subquery
+            query = f"""
+            SELECT * FROM posts
+            WHERE pid IN ({subquery})
+            ORDER BY 
+                CASE
+                    WHEN title IN ({placeholders}) THEN 1
+                    ELSE 2
+                END;
+            """
+            
+            # Execute the query with terms twice, once for the subquery and once for the title ordering
+            results = self.execute_query(query, tags + tags)
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving posts: {e}")
+         
+
+    
+    def retrieve_posts_with_keywords(self, keywords):
+        # create a list of placeholders for the number of terms
+        title_placeholders = ' OR '.join(['title LIKE ?'] * len(keywords))
+        body_placeholders = ' OR '.join(['body LIKE ?'] * len(keywords))
+        try:
+            # combine the two queries with UNION
+            query = f"""
+                SELECT * 
+                FROM (
+                    SELECT * 
+                    FROM posts 
+                    WHERE {title_placeholders}
+                    UNION 
+                    SELECT * 
+                    FROM posts 
+                    WHERE {body_placeholders}
+                ) AS combined_posts
+                ORDER BY post_date DESC;
+            """
+
+            
+            # create a list of parameters, twice the keywords (once for title and once for body)
+            params = [f"%{keyword}%" for keyword in keywords] * 2
+
+            results = self.execute_query(query, params)
+            if results:
+                return results
+            else:
+                return []
+
+        except Exception as e:
+            print(f"Error retrieving posts: {e}")
+
+            
+    def retrieve_top_10_liked_posts(self):
+        query = """
+        SELECT * 
+        FROM posts 
+        ORDER BY likes DESC 
+        LIMIT 10;
+        """
+        try:
+            results = self.execute_query(query)
+            if results:
+                return results
+            else:
+                return []
+            
+        except Exception as e:
+            print(f"Error retrieving top 10 most liked posts: { e }")
+    
+    def retrieve_top_10_liked_comments(self):
+        query = """
+        SELECT * FROM comments
+        ORDER BY likes DESC
+        LIMIT 10;
+        """
+        try:
+            results = self.execute_query(query)
+            if results:
+                return results
+            else:
+                return []
+            
+        except Exception as e:
+            print(f"Error retrieving top 10 liked comments: {e}")
+    
+    def retrieve_top_10_most_famous_users(self):
+        query = """
+        SELECT * FROM users
+        ORDER BY fame DESC
+        LIMIT 10;
+        """
+        try:
+            results = self.execute_query(query)
+            if results:
+                return results
+            else:
+                return []
+            
+        except Exception as e:
+            print(f"Error retrieving top 10 highest fame users: {e}")
+    
+
+    def retrieve_top_10_liked_posts_last_24_hours(self):
+        query = """
+        SELECT * FROM posts
+        WHERE post_date >= datetime('now', '-1 day')
+        ORDER BY likes DESC
+        LIMIT 10;
+        """
+        try:
+            results = self.execute_query(query)
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving top 10 liked posts in the last 24 hours: {e}")
+            
+    def retrieve_users_with_name(self, name):
+        query = """
+        SELECT * FROM users
+        WHERE username = ?;
+        """
+        try:
+            results = self.execute_query(query, (name,))
+            if results:
+                return results
+            else:
+                return []
+        except Exception as e:
+            print(f"Error retrieving Users: {e}")
+
+
             
 

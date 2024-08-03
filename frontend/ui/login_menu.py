@@ -24,7 +24,7 @@ class LogInMenu:
             print(f"Too Many Attempts. Returning to Main Menu")
 
     def handle_user_inputs(self, user_id, password):
-        result = self.user_controller.get_user_pass_by_id(user_id)
+        result = self.user_controller.retrieve_user_pass_by_id(user_id)
         
         if result is None:
             print("Invalid User ID or Password.")
@@ -39,7 +39,7 @@ class LogInMenu:
 
     def initialize_user(self, user_id):
 
-        result = self.user_controller.get_user_info_by_id(user_id)
+        result = self.user_controller.retrieve_user_info_by_id(user_id)
         user = User()
         user.set_uid(user_id)
         user.set_username(result[1])
